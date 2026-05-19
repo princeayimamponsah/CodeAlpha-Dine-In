@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: dine-in-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: dine-in
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - dine-in-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dine-in-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: development
+      MONGODB_URI: mongodb://mongodb:27017/dine-in
+      JWT_SECRET: your-super-secret-jwt-key
+      JWT_EXPIRE: 7d
+      BCRYPT_ROUNDS: 10
+      CORS_ORIGIN: http://localhost:3000
+    depends_on:
+      - mongodb
+    networks:
+      - dine-in-network
+    volumes:
+      - ./backend:/app
+
+volumes:
+  mongodb_data:
+
+networks:
+  dine-in-network:
+    driver: bridge
