@@ -64,7 +64,10 @@ class OrderService {
     // Assign order to table
     await tableService.assignOrderToTable(tableId, order._id);
 
-    return order.populate('table').populate('items.menuItem').populate('createdBy');
+    return await Order.findById(order._id)
+      .populate('table')
+      .populate('items.menuItem')
+      .populate('createdBy');
   }
 
   async getOrderById(orderId) {

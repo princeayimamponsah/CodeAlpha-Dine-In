@@ -53,7 +53,10 @@ export const SignupPage = () => {
     } catch (error) {
       addNotification({
         type: 'error',
-        message: error.response?.data?.message || 'Signup failed',
+        message:
+          error.response?.data?.message ||
+          error.response?.data?.errors?.[0]?.msg ||
+          'Signup failed',
       });
     } finally {
       setLoading(false);

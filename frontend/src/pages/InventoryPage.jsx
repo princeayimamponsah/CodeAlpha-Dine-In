@@ -95,7 +95,7 @@ export const InventoryPage = () => {
         </Card>
         <Card variant="primary">
           <p className="text-sm text-softgray mb-2">Inventory Value</p>
-          <p className="text-3xl font-bold text-charcoal">${status.totalInventoryValue || 0}</p>
+          <p className="text-3xl font-bold text-charcoal">GHS {status.totalInventoryValue || 0}</p>
         </Card>
         <Card variant="success">
           <p className="text-sm text-softgray mb-2">Avg Stock Level</p>
@@ -207,7 +207,7 @@ export const InventoryPage = () => {
               />
 
               <Input
-                label="Cost per Unit"
+                label="Cost per Unit (GHS)"
                 type="number"
                 step="0.01"
                 value={restockData.cost}

@@ -101,7 +101,7 @@ export const MenuPage = () => {
     setIsModalOpen(true);
   };
 
-  const categories = ['all', 'appetizers', 'mains', 'desserts', 'beverages', 'specials'];
+  const categories = ['all', 'appetizers', 'mains', 'sides', 'desserts', 'beverages', 'specials'];
 
   if (loading) {
     return <div className="p-6 text-center">Loading menu items...</div>;
@@ -206,7 +206,7 @@ export const MenuPage = () => {
 
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xl font-bold text-wine">
-                  ${item.price.toFixed(2)}
+                  GHS {item.price.toFixed(2)}
                 </span>
                 <Badge
                   text={item.isAvailable ? 'Available' : 'Unavailable'}
@@ -253,6 +253,7 @@ export const MenuPage = () => {
               >
                 <option value="appetizers">Appetizers</option>
                 <option value="mains">Mains</option>
+                <option value="sides">Sides</option>
                 <option value="desserts">Desserts</option>
                 <option value="beverages">Beverages</option>
                 <option value="specials">Specials</option>
@@ -260,7 +261,7 @@ export const MenuPage = () => {
             </div>
 
             <Input
-              label="Price *"
+              label="Price (GHS) *"
               type="number"
               step="0.01"
               value={newItem.price}

@@ -3,8 +3,10 @@ import api from './api';
 export const authService = {
   register: (userData) => api.post('/auth/register', userData),
   login: (email, password) => api.post('/auth/login', { email, password }),
+  me: () => api.get('/auth/me'),
   getProfile: () => api.get('/auth/profile'),
   updateProfile: (data) => api.patch('/auth/profile', data),
+  updateUserRole: (id, role) => api.patch(`/auth/users/${id}/role`, { role }),
   getAllUsers: () => api.get('/auth/users'),
 };
 
