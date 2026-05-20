@@ -3,10 +3,10 @@ import { Badge, Button, Card, SectionHeader } from '../components/UI';
 import { Download, Receipt, TrendingUp, WalletCards } from 'lucide-react';
 
 const transactions = [
-  { ref: 'TX-7812', guest: 'Olivia Stone', amount: '$128.40', method: 'Card', status: 'Settled' },
-  { ref: 'TX-7811', guest: 'Aiden Brooks', amount: '$76.20', method: 'Cash', status: 'Settled' },
-  { ref: 'TX-7810', guest: 'Sophia Lane', amount: '$94.90', method: 'Mobile', status: 'Pending' },
-  { ref: 'TX-7809', guest: 'Ethan Clark', amount: '$210.10', method: 'Card', status: 'Refunded' },
+  { ref: 'TX-7812', guest: 'Olivia Stone', amount: 'GHS 128.40', method: 'Card', status: 'Settled' },
+  { ref: 'TX-7811', guest: 'Aiden Brooks', amount: 'GHS 76.20', method: 'Cash', status: 'Settled' },
+  { ref: 'TX-7810', guest: 'Sophia Lane', amount: 'GHS 94.90', method: 'Mobile', status: 'Pending' },
+  { ref: 'TX-7809', guest: 'Ethan Clark', amount: 'GHS 210.10', method: 'Card', status: 'Refunded' },
 ];
 
 export const TransactionsPage = () => {
@@ -23,14 +23,14 @@ export const TransactionsPage = () => {
         <Card className="flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-softgray">Today’s settled</p>
-            <p className="mt-2 text-3xl font-semibold text-charcoal">$4,820</p>
+            <p className="mt-2 text-3xl font-semibold text-charcoal">GHS 4,820</p>
           </div>
           <WalletCards className="text-wine" />
         </Card>
         <Card className="flex items-center justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-softgray">Pending</p>
-            <p className="mt-2 text-3xl font-semibold text-charcoal">$640</p>
+            <p className="mt-2 text-3xl font-semibold text-charcoal">GHS 640</p>
           </div>
           <Receipt className="text-gold" />
         </Card>

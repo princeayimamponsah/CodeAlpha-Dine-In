@@ -167,7 +167,7 @@ export const OrdersPage = () => {
                     </div>
                     <div>
                       <p className="text-gray-600 dark:text-gray-400">Total</p>
-                      <p className="font-semibold">${order.totalAmount.toFixed(2)}</p>
+                      <p className="font-semibold">GHS {order.totalAmount.toFixed(2)}</p>
                     </div>
                     <div>
                       <p className="text-gray-600 dark:text-gray-400">Payment</p>
@@ -225,7 +225,7 @@ export const OrdersPage = () => {
                 >
                   <div>
                     <p className="font-semibold text-gray-900 dark:text-gray-100">{item.name}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">${item.price.toFixed(2)}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">GHS {item.price.toFixed(2)}</p>
                   </div>
                   <Button
                     onClick={() => addOrderItem(item._id)}
@@ -252,7 +252,7 @@ export const OrdersPage = () => {
                       <span>
                         {menuItem?.name} x {orderItem.quantity}
                       </span>
-                      <span>${(menuItem?.price * orderItem.quantity).toFixed(2)}</span>
+                      <span>GHS {(menuItem?.price * orderItem.quantity).toFixed(2)}</span>
                     </div>
                   );
                 })}

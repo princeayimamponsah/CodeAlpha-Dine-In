@@ -42,3 +42,13 @@ exports.updateProfile = catchAsyncErrors(async (req, res) => {
     new ApiResponse(200, user, 'Profile updated successfully')
   );
 });
+
+exports.updateUserRole = catchAsyncErrors(async (req, res) => {
+  const { id } = req.params;
+  const { role } = req.body;
+  const user = await authService.updateUserRole(id, role);
+
+  res.status(200).json(
+    new ApiResponse(200, user, 'User role updated successfully')
+  );
+});

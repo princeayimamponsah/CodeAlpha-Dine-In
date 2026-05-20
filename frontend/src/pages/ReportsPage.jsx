@@ -63,7 +63,7 @@ export const ReportsPage = () => {
 				<Card variant="primary" className="flex items-center justify-between gap-4">
 					<div>
 						<p className="text-xs font-semibold uppercase tracking-[0.18em] text-softgray">Monthly revenue</p>
-						<p className="mt-2 text-3xl font-semibold text-charcoal">$98.4k</p>
+						<p className="mt-2 text-3xl font-semibold text-charcoal">GHS 98.4k</p>
 					</div>
 					<TrendingUp className="text-wine" />
 				</Card>

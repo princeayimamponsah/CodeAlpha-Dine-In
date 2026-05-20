@@ -5,6 +5,8 @@ import { AppShell } from './components/Layout';
 import { Toast, LoadingSpinner } from './components/UI';
 import { LoginPage } from './pages/LoginPage';
 import { SignupPage } from './pages/SignupPage';
+import AdminUsersPage from './pages/AdminUsersPage';
+import { authService } from './services/apiServices';
 import { DashboardPage } from './pages/DashboardPage';
 import { OrdersPage } from './pages/OrdersPage';
 import { ReservationsPage } from './pages/ReservationsPage';
@@ -40,6 +42,7 @@ const navigation = [
   { id: 8, label: 'Transactions', path: '/transactions', icon: Receipt, roles: ['admin'] },
   { id: 9, label: 'Reports', path: '/reports', icon: BarChart2, roles: ['admin'] },
   { id: 10, label: 'Settings', path: '/settings', icon: Settings, roles: ['admin', 'staff'] },
+  { id: 11, label: 'Users', path: '/admin/users', icon: Users, roles: ['admin'] },
 ];
 
 function ProtectedRoute({ children, user }) {
@@ -53,7 +56,7 @@ function App() {
   const [isDark, setIsDark] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isBootstrapping, setIsBootstrapping] = useState(true);
-  const { user, isAuthenticated, loadAuthFromStorage } = useAuthStore();
+  const { user, token, isAuthenticated, loadAuthFromStorage, updateUser, logout } = useAuthStore();
 
   useEffect(() => {
     loadAuthFromStorage();
@@ -63,6 +66,26 @@ function App() {
     }
     setIsBootstrapping(false);
   }, []);
+
+  useEffect(() => {
+    const refreshUserRole = async () => {
+      if (!isAuthenticated || !token) {
+        return;
+      }
+
+      try {
+        const { data } = await authService.me();
+        if (data?.data) {
+          updateUser(data.data);
+        }
+      } catch (error) {
+        console.error('Failed to refresh authenticated user profile:', error);
+        logout();
+      }
+    };
+
+    refreshUserRole();
+  }, [isAuthenticated, token, updateUser, logout]);
 
   useEffect(() => {
     if (isDark) {
@@ -174,6 +197,14 @@ function App() {
               element={
                 <ProtectedRoute user={user}>
                   {user?.role === 'admin' ? <ReportsPage /> : <Navigate to="/dashboard" replace />}
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/users"
+              element={
+                <ProtectedRoute user={user}>
+                  {user?.role === 'admin' ? <AdminUsersPage /> : <Navigate to="/dashboard" replace />}
                 </ProtectedRoute>
               }
             />

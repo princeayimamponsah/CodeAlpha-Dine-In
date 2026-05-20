@@ -66,7 +66,7 @@ class AuthService {
   }
 
   async getUserProfile(userId) {
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select('-password');
     if (!user) {
       throw new ApiError(404, 'User not found');
     }
@@ -83,7 +83,25 @@ class AuthService {
       userId,
       { name, phone },
       { new: true, runValidators: true }
-    );
+    ).select('-password');
+
+    if (!user) {
+      throw new ApiError(404, 'User not found');
+    }
+
+    return user;
+  }
+
+  async updateUserRole(userId, role) {
+    if (!['admin', 'staff'].includes(role)) {
+      throw new ApiError(400, 'Invalid role');
+    }
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { role },
+      { new: true, runValidators: true }
+    ).select('-password');
 
     if (!user) {
       throw new ApiError(404, 'User not found');

@@ -42,7 +42,7 @@ export const LandingPage = () => {
                 <h4 className="font-semibold text-lg">Dish Name {i}</h4>
                 <p className="text-softgray text-sm">A short evocative description about the flavor and origin.</p>
                 <div className="mt-4 flex items-center justify-between">
-                  <div className="text-wine font-bold">$12.50</div>
+                  <div className="text-wine font-bold">GHS 12.50</div>
                   <Button variant="outline" size="sm">Add</Button>
                 </div>
               </div>

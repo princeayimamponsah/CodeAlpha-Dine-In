@@ -13,6 +13,7 @@ import {
 } from 'recharts';
 import { Card, Badge, Button, MetricCard, SectionHeader } from '../components/UI';
 import { orderService, tableService, inventoryService } from '../services/apiServices';
+import { useAuthStore } from '../context/store';
 import {
   AlertTriangle,
   ArrowRight,
@@ -26,6 +27,7 @@ import {
 } from 'lucide-react';
 
 export const DashboardPage = () => {
+  const user = useAuthStore((state) => state.user);
   const [stats, setStats] = useState({
     activeOrders: 0,
     occupiedTables: 0,
@@ -35,6 +37,7 @@ export const DashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [recentOrders, setRecentOrders] = useState([]);
   const [chartData, setChartData] = useState([]);
+  const isAdmin = user?.role === 'admin';
 
   useEffect(() => {
     fetchDashboardData();
@@ -43,24 +46,31 @@ export const DashboardPage = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const [ordersRes, tablesRes, inventoryRes, salesRes] = await Promise.all([
+      const [ordersRes, tablesRes, inventoryRes, salesRes] = await Promise.allSettled([
         orderService.getActiveOrders(),
         tableService.getAllTables(),
-        inventoryService.getLowStockItems(),
-        orderService.getDailySales(new Date().toISOString().split('T')[0]),
+        isAdmin ? inventoryService.getLowStockItems() : Promise.resolve({ data: { data: [] } }),
+        isAdmin
+          ? orderService.getDailySales(new Date().toISOString().split('T')[0])
+          : Promise.resolve({ data: { data: { totalSales: 0 } } }),
       ]);
 
-      const occupiedCount = tablesRes.data.data.filter((t) => t.status === 'occupied').length;
-      const dailySales = Number(salesRes.data.data.totalSales || 0);
+      const orders = ordersRes.status === 'fulfilled' ? ordersRes.value.data?.data || [] : [];
+      const tables = tablesRes.status === 'fulfilled' ? tablesRes.value.data?.data || [] : [];
+      const lowStock = inventoryRes.status === 'fulfilled' ? inventoryRes.value.data?.data || [] : [];
+      const dailySalesData = salesRes.status === 'fulfilled' ? salesRes.value.data?.data || {} : {};
+
+      const occupiedCount = tables.filter((t) => t.status === 'occupied').length;
+      const dailySales = Number(dailySalesData.totalSales || 0);
 
       setStats({
-        activeOrders: ordersRes.data.data.length,
+        activeOrders: orders.length,
         occupiedTables: occupiedCount,
-        lowStockItems: inventoryRes.data.data.length,
+        lowStockItems: lowStock.length,
         dailySales,
       });
 
-      setRecentOrders(ordersRes.data.data.slice(0, 5));
+      setRecentOrders(orders.slice(0, 5));
 
       const mockData = [
         { day: 'Mon', sales: 3900, orders: 24 },
@@ -139,10 +149,10 @@ export const DashboardPage = () => {
         <MetricCard
           icon={TrendingUp}
           label="Total Revenue"
-          value={`$${stats.dailySales.toLocaleString()}`}
-          trend={revenueTrend}
+          value={isAdmin ? `GHS ${stats.dailySales.toLocaleString()}` : 'Admin only'}
+          trend={isAdmin ? revenueTrend : undefined}
           tone="wine"
-          hint="vs yesterday"
+          hint={isAdmin ? 'vs yesterday' : 'restricted metric'}
         />
         <MetricCard
           icon={ShoppingCart}
@@ -163,10 +173,10 @@ export const DashboardPage = () => {
         <MetricCard
           icon={AlertTriangle}
           label="Inventory Alerts"
-          value={stats.lowStockItems}
-          trend={stockTrend}
+          value={isAdmin ? stats.lowStockItems : 'Admin only'}
+          trend={isAdmin ? stockTrend : undefined}
           tone="gold"
-          hint="needs attention"
+          hint={isAdmin ? 'needs attention' : 'restricted metric'}
         />
       </div>
 
@@ -192,7 +202,7 @@ export const DashboardPage = () => {
               <CartesianGrid strokeDasharray="3 3" stroke="#EAD7CC" vertical={false} />
               <XAxis dataKey="day" tickLine={false} axisLine={false} tick={{ fill: '#6B6B6B', fontSize: 12 }} />
               <YAxis tickLine={false} axisLine={false} tick={{ fill: '#6B6B6B', fontSize: 12 }} />
-              <Tooltip {...chartTooltip} formatter={(value) => [`$${Number(value).toLocaleString()}`, 'Revenue']} />
+              <Tooltip {...chartTooltip} formatter={(value) => [`GHS ${Number(value).toLocaleString()}`, 'Revenue']} />
               <Area type="monotone" dataKey="sales" stroke="#6D1F3D" strokeWidth={3} fill="url(#revenueGradient)" />
             </AreaChart>
           </ResponsiveContainer>
@@ -270,7 +280,7 @@ export const DashboardPage = () => {
                   <td className="px-4 py-4 font-medium text-charcoal">Table {order.table?.tableNumber || '—'}</td>
                   <td className="px-4 py-4 text-softgray">{format(order.createdAt, 'dd MMM yyyy')}</td>
                   <td className="px-4 py-4 text-softgray">{format(order.createdAt, 'HH:mm')}</td>
-                  <td className="px-4 py-4 font-semibold text-charcoal">${Number(order.totalAmount || 0).toFixed(2)}</td>
+                  <td className="px-4 py-4 font-semibold text-charcoal">GHS {Number(order.totalAmount || 0).toFixed(2)}</td>
                   <td className="px-4 py-4"><Badge text={order.paymentStatus} variant={order.paymentStatus === 'paid' ? 'success' : 'warning'} size="sm" /></td>
                   <td className="px-4 py-4">
                     <Badge
