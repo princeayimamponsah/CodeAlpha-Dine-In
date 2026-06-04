@@ -31,8 +31,8 @@ export const SignupPage = () => {
       return;
     }
 
-    if (password.length < 8) {
-      addNotification({ type: 'error', message: 'Password must be at least 8 characters' });
+    if (password.length < 6) {
+      addNotification({ type: 'error', message: 'Password must be at least 6 characters' });
       return;
     }
 
@@ -78,6 +78,7 @@ export const SignupPage = () => {
             <Input
               label="Full Name"
               type="text"
+              placeholder="Full name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="pl-10"
@@ -90,6 +91,7 @@ export const SignupPage = () => {
             <Input
               label="Email"
               type="email"
+              placeholder="name@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="pl-10"
@@ -103,7 +105,7 @@ export const SignupPage = () => {
               <Input
                 label="Password"
                 type="password"
-                
+                placeholder="........."
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="pl-10"
@@ -116,6 +118,7 @@ export const SignupPage = () => {
               <Input
                 label="Confirm"
                 type="password"
+                placeholder="........."
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="pl-10"

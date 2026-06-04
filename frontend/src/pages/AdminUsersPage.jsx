@@ -12,7 +12,7 @@ export const AdminUsersPage = () => {
       const { data } = await authService.getAllUsers();
       setUsers(data.data || data);
     } catch (e) {
-      console.error(e);
+      // Error handled silently
     } finally {
       setLoading(false);
     }

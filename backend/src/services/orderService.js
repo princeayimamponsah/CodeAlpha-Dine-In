@@ -110,7 +110,7 @@ class OrderService {
 
   async updateOrderStatus(orderId, newStatus) {
     if (
-      !['pending', 'preparing', 'served', 'completed', 'cancelled'].includes(
+      !['pending', 'preparing', 'ready', 'served', 'completed', 'cancelled'].includes(
         newStatus
       )
     ) {
@@ -140,7 +140,8 @@ class OrderService {
     }
 
     await order.save();
-    return order.populate('table').populate('items.menuItem');
+    await order.populate('table items.menuItem createdBy');
+    return order;
   }
 
   async updateOrderItemStatus(orderId, itemIndex, status) {
@@ -155,8 +156,8 @@ class OrderService {
 
     order.items[itemIndex].status = status;
     await order.save();
-
-    return order.populate('table').populate('items.menuItem');
+    await order.populate('table items.menuItem createdBy');
+    return order;
   }
 
   async processPayment(orderId, paymentData) {
@@ -185,7 +186,8 @@ class OrderService {
     }
 
     await order.save();
-    return order.populate('table').populate('items.menuItem');
+    await order.populate('table items.menuItem createdBy');
+    return order;
   }
 
   async addItemToOrder(orderId, itemData) {
@@ -230,7 +232,8 @@ class OrderService {
     await menuService.deductStock(itemData.menuItemId, itemData.quantity);
 
     await order.save();
-    return order.populate('table').populate('items.menuItem');
+    await order.populate('table items.menuItem createdBy');
+    return order;
   }
 
   async removeItemFromOrder(orderId, itemIndex) {
@@ -266,7 +269,7 @@ class OrderService {
 
   async getActiveOrders() {
     return await Order.find({
-      orderStatus: { $in: ['pending', 'preparing', 'served'] },
+      orderStatus: { $in: ['pending', 'preparing', 'ready', 'served'] },
     })
       .populate('table')
       .populate('items.menuItem')

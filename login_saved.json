@@ -1,0 +1,14 @@
+{
+  "statusCode": 200,
+  "data": {
+    "user": {
+      "id": "6a1c5ce260dd7da3181c3c25",
+      "name": "Admin User",
+      "email": "admin@dine-in.com",
+      "role": "admin"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMWM1Y2UyNjBkZDdkYTMxODFjM2MyNSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc4MDU3NDk3OSwiZXhwIjoxNzgxMTc5Nzc5fQ.avhimcKuNV70Nildny_zlh1qBzSEF0O5znTvmzzI-B8"
+  },
+  "message": "Login successful",
+  "success": true
+}

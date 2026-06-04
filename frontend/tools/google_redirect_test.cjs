@@ -1,0 +1,29 @@
+const { chromium } = require('playwright');
+
+(async () => {
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage();
+  try {
+    await page.goto('http://localhost:3001/login', { waitUntil: 'networkidle' });
+    await page.click('button[aria-label="Continue with Google"]', { timeout: 5000 });
+    // Poll the URL for a redirect to accounts.google.com
+    let url = page.url();
+    const start = Date.now();
+    while (!url.includes('accounts.google.com') && Date.now() - start < 15000) {
+      await new Promise((r) => setTimeout(r, 500));
+      url = page.url();
+    }
+    console.log('CURRENT_URL:', url);
+    if (url.includes('accounts.google.com')) {
+      console.log('RESULT: REDIRECT_OK');
+      process.exit(0);
+    }
+    console.error('RESULT: REDIRECT_FAILED');
+    process.exit(2);
+  } catch (err) {
+    console.error('ERROR:', err.message || err);
+    process.exit(3);
+  } finally {
+    await browser.close();
+  }
+})();

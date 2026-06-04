@@ -49,7 +49,9 @@ class ReservationService {
     const query = { status: { $ne: 'cancelled' } };
 
     if (filters.status) {
-      query.status = filters.status;
+      // Handle comma-separated status values
+      const statuses = filters.status.split(',').map(s => s.trim());
+      query.status = { $in: statuses };
     }
 
     if (filters.dateRange) {

@@ -11,6 +11,8 @@ const router = express.Router();
 
 router.post('/register', validateUserRegister, validateRequest, authController.register);
 router.post('/login', validateUserLogin, validateRequest, authController.login);
+router.get('/google', authController.googleAuth);
+router.get('/google/callback', authController.googleCallback);
 router.get('/me', authenticateToken, authController.getProfile);
 router.get('/profile', authenticateToken, authController.getProfile);
 router.patch('/profile', authenticateToken, authController.updateProfile);

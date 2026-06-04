@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { authService } from '../services/apiServices';
 import { Button, Input, Card, BrandMark } from '../components/UI';
 import { useAuthStore } from '../context/store';
@@ -6,14 +6,55 @@ import { useNotificationStore } from '../context/store';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle2, Clock3, Lock, Mail, ShieldCheck, Sparkles, UtensilsCrossed } from 'lucide-react';
+import GoogleSignInButton from '../components/GoogleSignInButton';
 
 export const LoginPage = () => {
-  const [email, setEmail] = useState('admin@dine-in.com');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const setAuth = useAuthStore((state) => state.setAuth);
   const addNotification = useNotificationStore((state) => state.addNotification);
   const navigate = useNavigate();
+
+  const decodeAuthPayload = (value) => {
+    const base64 = value.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+    return JSON.parse(atob(padded));
+  };
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const auth = params.get('auth');
+    const googleError = params.get('google_error');
+
+    if (googleError) {
+      addNotification({ type: 'error', message: 'Google sign-in failed' });
+      window.history.replaceState({}, '', '/login');
+      return;
+    }
+
+    if (!auth) {
+      return;
+    }
+
+    try {
+      const decoded = decodeAuthPayload(auth);
+      if (decoded?.token && decoded?.user) {
+        setAuth(decoded.user, decoded.token);
+        addNotification({ type: 'success', message: 'Google sign-in successful!' });
+        navigate('/dashboard');
+      }
+    } catch {
+      addNotification({ type: 'error', message: 'Unable to complete Google sign-in' });
+    } finally {
+      window.history.replaceState({}, '', '/login');
+    }
+  }, [addNotification, navigate, setAuth]);
+
+  const handleGoogleLogin = () => {
+    const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    window.location.href = `${apiBase}/auth/google`;
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -92,11 +133,11 @@ export const LoginPage = () => {
 
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="relative">
-                <Mail className="pointer-events-none absolute left-4 top-[3.15rem] text-softgray" size={18} />
+                <Mail className="pointer-events-none absolute left-4 top-[2.5rem] text-softgray" size={18} />
                 <Input
                   label="Email"
                   type="email"
-                  placeholder="admin@dine-in.com"
+                  placeholder="name@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-11"
@@ -104,11 +145,11 @@ export const LoginPage = () => {
               </div>
 
               <div className="relative">
-                <Lock className="pointer-events-none absolute left-4 top-[3.15rem] text-softgray" size={18} />
+                <Lock className="pointer-events-none absolute left-4 top-[2.5rem] text-softgray" size={18} />
                 <Input
                   label="Password"
                   type="password"
-                  placeholder="••••••••"
+                  placeholder="........."
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="pl-11"
@@ -125,18 +166,17 @@ export const LoginPage = () => {
                 Sign In
                 <ArrowRight size={18} className="transition-transform duration-300 group-hover:translate-x-0.5" />
               </Button>
+
+              <GoogleSignInButton onClick={handleGoogleLogin} />
+
+              <p className="text-center text-xs text-softgray">
+                Use your Google account to sign in quickly and securely.
+              </p>
             </form>
 
-            <div className="mt-6 rounded-[24px] border border-beige/70 bg-gradient-to-br from-cream via-white to-peach/35 p-5 text-sm text-softgray shadow-soft">
-              <p className="mb-3 flex items-center gap-2 font-semibold text-charcoal">
-                <UtensilsCrossed size={16} className="text-wine" /> Demo credentials
-              </p>
-              <p>Email: admin@dine-in.com</p>
-              <p>Password: password123</p>
-            </div>
+            
 
             <div className="mt-5 rounded-[24px] border border-white/75 bg-white/70 p-5 text-center shadow-soft">
-              <p className="text-sm text-softgray">Need to onboard a new team member?</p>
               <Link to="/signup" className="mt-2 inline-flex items-center gap-2 font-semibold text-wine transition-colors hover:text-gold">
                 Create an account <ArrowRight size={16} />
               </Link>

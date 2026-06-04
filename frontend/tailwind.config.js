@@ -3,31 +3,30 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: 'class',
   theme: {
     extend: {
       colors: {
         wine: {
-          DEFAULT: '#6D1F3D',
-          50: '#f6e6ea',
-          100: '#efd0d9',
-          200: '#e6a8b5',
-          500: '#6D1F3D',
+          DEFAULT: '#6B1E1E',
+          50: '#f9e9e8',
+          100: '#f3d4d2',
+          200: '#e8b0aa',
+          500: '#6B1E1E',
         },
         peach: {
-          DEFAULT: '#F7D6C2',
+          DEFAULT: '#F8D7C4',
         },
         cream: {
-          DEFAULT: '#FFF7F2',
+          DEFAULT: '#FFF9F5',
         },
         beige: {
-          DEFAULT: '#EAD7CC',
+          DEFAULT: '#E9D7C9',
         },
         gold: {
-          DEFAULT: '#D4A373',
+          DEFAULT: '#D4A056',
         },
         olive: {
-          DEFAULT: '#7D8F69',
+          DEFAULT: '#2F8F5B',
         },
         charcoal: {
           DEFAULT: '#2B2B2B',
@@ -37,7 +36,7 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Manrope', 'Inter', 'system-ui', 'sans-serif'],
         heading: ['Cormorant Garamond', 'serif'],
       },
       boxShadow: {

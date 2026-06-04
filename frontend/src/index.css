@@ -1,5 +1,5 @@
-/* Import Cormorant Garamond for headings */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700;800&display=swap');
+/* Import premium body and heading fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,15 +7,15 @@
 
 /* Design system variables */
 :root {
-  --color-wine: #6D1F3D;
-  --color-peach: #F7D6C2;
-  --color-cream: #FFF7F2;
-  --color-beige: #EAD7CC;
-  --color-gold: #D4A373;
-  --color-olive: #7D8F69;
+  --color-wine: #6B1E1E;
+  --color-peach: #F8D7C4;
+  --color-cream: #FFF9F5;
+  --color-beige: #E9D7C9;
+  --color-gold: #D4A056;
+  --color-olive: #2F8F5B;
   --color-charcoal: #2B2B2B;
   --color-softgray: #6B6B6B;
-  --bg-gradient: linear-gradient(180deg, #FFF7F2 0%, #FFFDFB 50%, #FFF8F4 100%);
+  --bg-gradient: linear-gradient(180deg, #FFF9F5 0%, #FFFDFB 48%, #FFF7F1 100%);
 }
 
 * {
@@ -33,12 +33,12 @@ body,
 
 body {
   background:
-    radial-gradient(circle at top left, rgba(247, 214, 194, 0.82), transparent 34%),
-    radial-gradient(circle at top right, rgba(212, 163, 115, 0.15), transparent 24%),
+    radial-gradient(circle at top left, rgba(248, 215, 196, 0.82), transparent 34%),
+    radial-gradient(circle at top right, rgba(212, 160, 86, 0.15), transparent 24%),
     var(--bg-gradient);
   color: var(--color-charcoal);
   @apply antialiased;
-  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-family: Manrope, Inter, ui-sans-serif, system-ui, sans-serif;
   background-attachment: fixed;
 }
 
@@ -88,7 +88,7 @@ h1, h2, h3, h4, h5, h6 {
   position: absolute;
   inset: -18px;
   border-radius: inherit;
-  background: radial-gradient(circle, rgba(109, 31, 61, 0.08), transparent 65%);
+  background: radial-gradient(circle, rgba(107, 30, 30, 0.08), transparent 65%);
   filter: blur(14px);
   z-index: -1;
 }

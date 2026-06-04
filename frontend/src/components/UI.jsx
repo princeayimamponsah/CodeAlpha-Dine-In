@@ -179,17 +179,17 @@ export const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal/45 px-4 backdrop-blur-xl">
-      <div className={`${sizeClasses[size]} w-full rounded-[28px] border border-white/70 bg-gradient-to-br from-cream via-white to-peach/20 shadow-[0_32px_100px_rgba(43,43,43,0.22)] animate-fade-in`}>
-        <div className="flex items-center justify-between border-b border-beige/60 px-6 py-5">
+      <div className={`${sizeClasses[size]} w-full max-h-[90vh] rounded-[28px] border border-white/70 bg-gradient-to-br from-cream via-white to-peach/20 shadow-[0_32px_100px_rgba(43,43,43,0.22)] animate-fade-in flex flex-col overflow-hidden`}>
+        <div className="flex items-center justify-between border-b border-beige/60 px-6 py-5 flex-shrink-0">
           <h2 className="text-lg font-semibold text-charcoal">{title}</h2>
           <button
             onClick={onClose}
-            className="rounded-full p-2 text-softgray transition-colors hover:bg-wine/5 hover:text-wine"
+            className="rounded-full p-2 text-softgray transition-colors hover:bg-wine/5 hover:text-wine flex-shrink-0"
           >
             <X size={20} />
           </button>
         </div>
-        <div className="p-6">{children}</div>
+        <div className="p-6 overflow-y-auto">{children}</div>
       </div>
     </div>
   );

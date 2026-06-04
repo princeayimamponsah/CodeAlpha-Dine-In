@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from './context/store';
 import { AppShell } from './components/Layout';
+import ErrorBoundary from './components/ErrorBoundary';
 import { Toast, LoadingSpinner } from './components/UI';
 import { LoginPage } from './pages/LoginPage';
 import { SignupPage } from './pages/SignupPage';
@@ -10,13 +11,15 @@ import { authService } from './services/apiServices';
 import { DashboardPage } from './pages/DashboardPage';
 import { OrdersPage } from './pages/OrdersPage';
 import { ReservationsPage } from './pages/ReservationsPage';
-import { MenuPage } from './pages/MenuPage';
-import { TablesPage } from './pages/TablesPage';
-import { InventoryPage } from './pages/InventoryPage';
-import { StaffPage } from './pages/StaffPage';
-import { TransactionsPage } from './pages/TransactionsPage';
-import { ReportsPage } from './pages/ReportsPage';
+import { AvailableMenusPage } from './pages/AvailableMenusPage';
 import { SettingsPage } from './pages/SettingsPage';
+
+const MenuPage = lazy(() => import('./pages/MenuPage'));
+const TablesPage = lazy(() => import('./pages/TablesPage'));
+const InventoryPage = lazy(() => import('./pages/InventoryPage'));
+const StaffPage = lazy(() => import('./pages/StaffPage'));
+const TransactionsPage = lazy(() => import('./pages/TransactionsPage'));
+const ReportsPage = lazy(() => import('./pages/ReportsPage'));
 import {
   BarChart3,
   ShoppingCart,
@@ -25,24 +28,23 @@ import {
   Table2,
   Package,
   Users,
-  Receipt,
   BarChart2,
   Settings,
 } from 'lucide-react';
 import './index.css';
 
 const navigation = [
-  { id: 1, label: 'Dashboard', path: '/dashboard', icon: BarChart3, roles: ['admin', 'staff'] },
-  { id: 2, label: 'Orders', path: '/orders', icon: ShoppingCart, roles: ['admin', 'staff'] },
-  { id: 3, label: 'Menu Items', path: '/menu', icon: UtensilsCrossed, roles: ['admin'] },
-  { id: 4, label: 'Reservations', path: '/reservations', icon: Calendar, roles: ['admin', 'staff'] },
-  { id: 5, label: 'Tables', path: '/tables', icon: Table2, roles: ['admin'] },
-  { id: 6, label: 'Inventory', path: '/inventory', icon: Package, roles: ['admin'] },
-  { id: 7, label: 'Staff', path: '/staff', icon: Users, roles: ['admin'] },
-  { id: 8, label: 'Transactions', path: '/transactions', icon: Receipt, roles: ['admin'] },
-  { id: 9, label: 'Reports', path: '/reports', icon: BarChart2, roles: ['admin'] },
-  { id: 10, label: 'Settings', path: '/settings', icon: Settings, roles: ['admin', 'staff'] },
-  { id: 11, label: 'Users', path: '/admin/users', icon: Users, roles: ['admin'] },
+  { id: 1, label: 'Dashboard', path: '/dashboard', icon: BarChart3, roles: ['admin', 'staff'], category: 'Operations' },
+  { id: 2, label: 'Orders', path: '/orders', icon: ShoppingCart, roles: ['admin', 'staff'], category: 'Operations' },
+  { id: 3, label: 'Menu', path: '/menu', icon: UtensilsCrossed, roles: ['admin', 'staff'], category: 'Operations' },
+  { id: 4, label: 'Reservations', path: '/reservations', icon: Calendar, roles: ['admin', 'staff'], category: 'Operations' },
+  { id: 5, label: 'Tables', path: '/tables', icon: Table2, roles: ['admin', 'staff'], category: 'Operations' },
+  { id: 6, label: 'Inventory', path: '/inventory', icon: Package, roles: ['admin'], category: 'Management' },
+  { id: 7, label: 'Reports', path: '/reports', icon: BarChart2, roles: ['admin'], category: 'Management' },
+  { id: 8, label: 'Staff', path: '/staff', icon: Users, roles: ['admin'], category: 'Management' },
+  { id: 9, label: 'Transactions', path: '/transactions', icon: BarChart2, roles: ['admin'], category: 'Management' },
+  { id: 10, label: 'Settings', path: '/settings', icon: Settings, roles: ['admin', 'staff'], category: 'Management' },
+  { id: 11, label: 'Admin Users', path: '/admin/users', icon: Users, roles: ['admin'], category: 'Management' },
 ];
 
 function ProtectedRoute({ children, user }) {
@@ -53,17 +55,12 @@ function ProtectedRoute({ children, user }) {
 }
 
 function App() {
-  const [isDark, setIsDark] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isBootstrapping, setIsBootstrapping] = useState(true);
   const { user, token, isAuthenticated, loadAuthFromStorage, updateUser, logout } = useAuthStore();
 
   useEffect(() => {
     loadAuthFromStorage();
-    // Set dark mode based on system preference
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setIsDark(true);
-    }
     setIsBootstrapping(false);
   }, []);
 
@@ -79,21 +76,13 @@ function App() {
           updateUser(data.data);
         }
       } catch (error) {
-        console.error('Failed to refresh authenticated user profile:', error);
+        // Failed to refresh profile, continue normally
         logout();
       }
     };
 
     refreshUserRole();
   }, [isAuthenticated, token, updateUser, logout]);
-
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDark]);
 
   if (isBootstrapping) {
     return <LoadingSpinner />;
@@ -117,11 +106,10 @@ function App() {
 
   return (
     <Router>
-      <div className={isDark ? 'dark' : ''}>
+      <div>
+        <ErrorBoundary>
         <AppShell
           navigation={navigation}
-          isDark={isDark}
-          setIsDark={setIsDark}
           mobileOpen={isSidebarOpen}
           setMobileOpen={setIsSidebarOpen}
         >
@@ -156,7 +144,21 @@ function App() {
               path="/menu"
               element={
                 <ProtectedRoute user={user}>
-                  {user?.role === 'admin' ? <MenuPage /> : <Navigate to="/dashboard" replace />}
+                  <AvailableMenusPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/menu-items"
+              element={
+                <ProtectedRoute user={user}>
+                  {user?.role === 'admin' ? (
+                    <Suspense fallback={<div>Loading...</div>}>
+                      <MenuPage />
+                    </Suspense>
+                  ) : (
+                    <Navigate to="/dashboard" replace />
+                  )}
                 </ProtectedRoute>
               }
             />
@@ -164,7 +166,9 @@ function App() {
               path="/tables"
               element={
                 <ProtectedRoute user={user}>
-                  {user?.role === 'admin' ? <TablesPage /> : <Navigate to="/dashboard" replace />}
+                  <Suspense fallback={<div>Loading...</div>}>
+                    <TablesPage />
+                  </Suspense>
                 </ProtectedRoute>
               }
             />
@@ -172,7 +176,13 @@ function App() {
               path="/inventory"
               element={
                 <ProtectedRoute user={user}>
-                  {user?.role === 'admin' ? <InventoryPage /> : <Navigate to="/dashboard" replace />}
+                    {user?.role === 'admin' ? (
+                      <Suspense fallback={<div>Loading...</div>}>
+                        <InventoryPage />
+                      </Suspense>
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )}
                 </ProtectedRoute>
               }
             />
@@ -180,7 +190,13 @@ function App() {
               path="/staff"
               element={
                 <ProtectedRoute user={user}>
-                  {user?.role === 'admin' ? <StaffPage /> : <Navigate to="/dashboard" replace />}
+                    {user?.role === 'admin' ? (
+                      <Suspense fallback={<div>Loading...</div>}>
+                        <StaffPage />
+                      </Suspense>
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )}
                 </ProtectedRoute>
               }
             />
@@ -188,7 +204,13 @@ function App() {
               path="/transactions"
               element={
                 <ProtectedRoute user={user}>
-                  {user?.role === 'admin' ? <TransactionsPage /> : <Navigate to="/dashboard" replace />}
+                    {user?.role === 'admin' ? (
+                      <Suspense fallback={<div>Loading...</div>}>
+                        <TransactionsPage />
+                      </Suspense>
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )}
                 </ProtectedRoute>
               }
             />
@@ -196,7 +218,13 @@ function App() {
               path="/reports"
               element={
                 <ProtectedRoute user={user}>
-                  {user?.role === 'admin' ? <ReportsPage /> : <Navigate to="/dashboard" replace />}
+                    {user?.role === 'admin' ? (
+                      <Suspense fallback={<div>Loading...</div>}>
+                        <ReportsPage />
+                      </Suspense>
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )}
                 </ProtectedRoute>
               }
             />
@@ -204,7 +232,7 @@ function App() {
               path="/admin/users"
               element={
                 <ProtectedRoute user={user}>
-                  {user?.role === 'admin' ? <AdminUsersPage /> : <Navigate to="/dashboard" replace />}
+                    {user?.role === 'admin' ? <AdminUsersPage /> : <Navigate to="/dashboard" replace />}
                 </ProtectedRoute>
               }
             />
@@ -220,6 +248,7 @@ function App() {
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </AppShell>
+        </ErrorBoundary>
 
         <Toast />
       </div>

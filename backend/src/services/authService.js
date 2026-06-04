@@ -2,6 +2,7 @@ const User = require('../models/User');
 const { hashPassword, comparePassword } = require('../config/password');
 const { generateToken } = require('../config/jwt');
 const { ApiError } = require('../utils/apiResponse');
+const crypto = require('crypto');
 
 class AuthService {
   async register(userData) {
@@ -108,6 +109,40 @@ class AuthService {
     }
 
     return user;
+  }
+
+  async findOrCreateGoogleUser(profile) {
+    const { email, name } = profile;
+
+    if (!email) {
+      throw new ApiError(400, 'Google account did not return an email address');
+    }
+
+    let user = await User.findOne({ email }).select('+password');
+
+    if (!user) {
+      const randomPassword = crypto.randomBytes(32).toString('hex');
+      const hashedPassword = await hashPassword(randomPassword);
+
+      user = await User.create({
+        name: name || email.split('@')[0],
+        email,
+        password: hashedPassword,
+        role: 'staff',
+      });
+    }
+
+    const token = generateToken(user._id, user.role);
+
+    return {
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+      token,
+    };
   }
 }
 
