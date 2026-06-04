@@ -106,11 +106,11 @@ export const CartSidebar = ({ isOpen, onClose }) => {
 
       {/* Sidebar */}
       <div
-        className={`fixed right-0 top-0 z-50 h-screen w-full max-w-[28rem] overflow-y-auto border-l border-white/70 bg-[linear-gradient(180deg,rgba(255,247,242,0.98),rgba(255,251,248,0.98))] shadow-[-16px_0_45px_rgba(43,43,43,0.12)] backdrop-blur-2xl transition-transform duration-300 ${
+        className={`fixed right-0 top-0 z-50 h-screen w-full max-w-[28rem] overflow-y-auto border-l border-white/70 bg-cream shadow-[-16px_0_45px_rgba(43,43,43,0.12)] backdrop-blur-2xl transition-transform duration-300 ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <div className="sticky top-0 z-10 border-b border-white/70 bg-[rgba(255,247,242,0.98)] px-6 py-4 backdrop-blur-xl">
+        <div className="sticky top-0 z-10 border-b border-white/70 bg-cream px-6 py-4 backdrop-blur-xl">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-wine/10 text-wine">

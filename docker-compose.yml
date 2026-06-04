@@ -25,6 +25,7 @@ services:
     environment:
       NODE_ENV: development
       MONGODB_URI: mongodb://mongodb:27017/dine-in
+      FRONTEND_URL: http://localhost:3000
       JWT_SECRET: your-super-secret-jwt-key
       JWT_EXPIRE: 7d
       BCRYPT_ROUNDS: 10

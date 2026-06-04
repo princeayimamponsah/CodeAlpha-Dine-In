@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 
  (async () => {
-  const base = 'http://localhost:3001';
+  const base = 'http://localhost:3000';
   const admin = { email: 'admin@dine-in.com', password: 'password123' };
 
   const browser = await chromium.launch({ headless: true });

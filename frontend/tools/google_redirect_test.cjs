@@ -4,7 +4,7 @@ const { chromium } = require('playwright');
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
   try {
-    await page.goto('http://localhost:3001/login', { waitUntil: 'networkidle' });
+    await page.goto('http://localhost:3000/login', { waitUntil: 'networkidle' });
     await page.click('button[aria-label="Continue with Google"]', { timeout: 5000 });
     // Poll the URL for a redirect to accounts.google.com
     let url = page.url();

@@ -2,10 +2,12 @@ const authService = require('../services/authService');
 const catchAsyncErrors = require('../utils/catchAsyncErrors');
 const { ApiResponse } = require('../utils/apiResponse');
 
+const getFrontendUrl = () => process.env.FRONTEND_URL || process.env.CORS_ORIGIN || 'http://localhost:3000';
+
 const buildGoogleAuthUrl = () => {
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const redirectUri = process.env.GOOGLE_REDIRECT_URI || `${process.env.API_BASE_URL || 'http://localhost:5000'}/api/auth/google/callback`;
-  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3001';
+  const frontendUrl = getFrontendUrl();
 
   if (!clientId) {
     throw new Error('GOOGLE_CLIENT_ID is not configured');
@@ -122,7 +124,7 @@ exports.googleAuth = catchAsyncErrors(async (req, res) => {
 
 exports.googleCallback = catchAsyncErrors(async (req, res) => {
   const { code, error } = req.query;
-  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3001';
+  const frontendUrl = getFrontendUrl();
 
   if (error) {
     return res.redirect(`${frontendUrl}/login?google_error=${encodeURIComponent(error)}`);

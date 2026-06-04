@@ -98,7 +98,7 @@ export const AvailableMenusPage = () => {
                 {categoryItems.map((item) => (
                   <Card key={item._id}>
                     <div className="mb-4">
-                      <div className="mb-4 flex h-40 w-full items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-peach to-gold/70">
+                      <div className="mb-4 flex h-40 w-full items-center justify-center overflow-hidden rounded-2xl bg-gold/20">
                         <img
                           src={item.image}
                           alt={item.name}
@@ -151,7 +151,7 @@ export const AvailableMenusPage = () => {
           {items.map((item) => (
             <Card key={item._id}>
               <div className="mb-4">
-                <div className="mb-4 flex h-40 w-full items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-peach to-gold/70">
+                <div className="mb-4 flex h-40 w-full items-center justify-center overflow-hidden rounded-2xl bg-gold/20">
                   <img
                     src={item.image}
                     alt={item.name}
