@@ -79,3 +79,49 @@ export const useMenuStore = create((set) => ({
       items: state.items.filter((item) => item._id !== id),
     })),
 }));
+
+export const useCartStore = create((set) => ({
+  items: [],
+  tableId: '',
+  specialNotes: '',
+  
+  addToCart: (item) =>
+    set((state) => {
+      const existing = state.items.find((i) => i._id === item._id);
+      if (existing) {
+        return {
+          items: state.items.map((i) =>
+            i._id === item._id ? { ...i, quantity: i.quantity + 1 } : i
+          ),
+        };
+      }
+      return { items: [...state.items, { ...item, quantity: 1 }] };
+    }),
+  
+  removeFromCart: (itemId) =>
+    set((state) => ({
+      items: state.items.filter((i) => i._id !== itemId),
+    })),
+  
+  updateQuantity: (itemId, quantity) =>
+    set((state) => {
+      if (quantity <= 0) {
+        return { items: state.items.filter((i) => i._id !== itemId) };
+      }
+      return {
+        items: state.items.map((i) =>
+          i._id === itemId ? { ...i, quantity } : i
+        ),
+      };
+    }),
+  
+  setTableId: (tableId) => set({ tableId }),
+  setSpecialNotes: (notes) => set({ specialNotes: notes }),
+  
+  clearCart: () => set({ items: [], tableId: '', specialNotes: '' }),
+  
+  getTotal: () => {
+    // This is a helper that needs to be called with state
+    return 0;
+  },
+}));

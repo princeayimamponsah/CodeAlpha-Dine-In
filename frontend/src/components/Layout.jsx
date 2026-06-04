@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import {
-  Bell,
   ChevronDown,
   LogOut,
   MapPin,
   Menu,
-  Moon,
   Search,
+  ShoppingCart,
   Sparkles,
-  Sun,
   X,
 } from 'lucide-react';
-import { useAuthStore } from '../context/store';
+import { useAuthStore, useCartStore } from '../context/store';
 import { BrandMark, Button } from './UI';
+import { CartSidebar } from './CartSidebar';
 
 const branchOptions = [
   { id: 'main', label: 'Main Dining' },
@@ -23,17 +22,28 @@ const branchOptions = [
 
 const isActiveRoute = (pathname, path) => pathname === path || pathname.startsWith(`${path}/`);
 
-export const AppShell = ({ children, navigation, isDark, setIsDark, mobileOpen, setMobileOpen }) => {
+export const AppShell = ({ children, navigation, mobileOpen, setMobileOpen }) => {
   const { user, logout } = useAuthStore();
+  const cartItems = useCartStore((state) => state.items);
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [profileOpen, setProfileOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
   const [branch, setBranch] = useState('main');
 
   const filteredNav = navigation.filter((item) => {
     if (item.roles && !item.roles.includes(user?.role)) return false;
     return true;
   });
+
+  const grouped = filteredNav.reduce((acc, item) => {
+    const key = item.category || 'Other';
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(item);
+    return acc;
+  }, {});
+
+  const orderOfGroups = ['Operations', 'Management', 'Other'];
 
   const activeItem = filteredNav.find((item) => isActiveRoute(pathname, item.path)) || filteredNav[0];
 
@@ -44,61 +54,57 @@ export const AppShell = ({ children, navigation, isDark, setIsDark, mobileOpen, 
 
   return (
     <div className="relative min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(247,214,194,0.65),_transparent_36%),radial-gradient(circle_at_top_right,_rgba(212,163,115,0.16),_transparent_24%),linear-gradient(180deg,#FFF7F2_0%,#FFFDFB_48%,#FFF8F4_100%)] text-charcoal">
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-80 flex-col border-r border-white/70 bg-[linear-gradient(180deg,rgba(255,247,242,0.96),rgba(255,251,248,0.96))] px-5 py-6 shadow-[12px_0_45px_rgba(43,43,43,0.06)] backdrop-blur-2xl lg:flex">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-80 flex-col overflow-y-auto border-r border-white/70 bg-[linear-gradient(180deg,rgba(255,247,242,0.96),rgba(255,251,248,0.96))] px-5 py-6 shadow-[12px_0_45px_rgba(43,43,43,0.06)] backdrop-blur-2xl lg:flex">
         <div className="mb-8 flex items-center gap-3 px-2">
           <BrandMark className="w-[11rem]" imgClassName="w-full" />
         </div>
 
-        <div className="mb-6 rounded-[24px] border border-white/80 bg-white/75 p-4 shadow-soft">
+        <div className="mb-6 rounded-[24px] border border-white/80 bg-white/75 p-4 shadow-soft flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-wine/10 text-wine">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-wine/10 text-wine flex-shrink-0">
               <Sparkles size={18} />
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-softgray">Current branch</p>
-              <p className="text-sm font-semibold text-charcoal">{branchOptions.find((option) => option.id === branch)?.label}</p>
+              <p className="text-sm font-semibold text-charcoal truncate">{branchOptions.find((option) => option.id === branch)?.label}</p>
             </div>
           </div>
         </div>
 
-        <nav className="flex-1 space-y-2 overflow-y-auto pr-1">
-          {filteredNav.map((item) => {
-            const active = isActiveRoute(pathname, item.path);
+        <nav className="flex-1 flex flex-col space-y-4 min-h-0">
+          {orderOfGroups.map((group) => {
+            const items = grouped[group];
+            if (!items || items.length === 0) return null;
             return (
-              <button
-                key={item.id}
-                onClick={() => navigate(item.path)}
-                className={`group flex w-full items-center gap-3 rounded-[20px] px-4 py-3.5 text-left text-sm font-medium transition-all duration-300 ${
-                  active
-                    ? 'bg-gradient-to-r from-wine/10 via-peach/65 to-white text-wine shadow-[0_14px_32px_rgba(109,31,61,0.12)] ring-1 ring-wine/10'
-                    : 'text-softgray hover:bg-white/80 hover:text-charcoal hover:shadow-soft'
-                }`}
-              >
-                <span className={`flex h-10 w-10 items-center justify-center rounded-2xl transition-all duration-300 ${active ? 'bg-wine text-cream shadow-[0_12px_28px_rgba(109,31,61,0.18)]' : 'bg-beige/55 text-charcoal group-hover:bg-peach/70'}`}>
-                  <item.icon size={18} />
-                </span>
-                <span className="flex-1">{item.label}</span>
-                {active && <span className="h-2.5 w-2.5 rounded-full bg-wine" />}
-              </button>
+              <div key={group} className="space-y-2">
+                <div className="px-2 text-xs font-semibold uppercase tracking-[0.12em] text-softgray">{group}</div>
+                <div className="flex flex-col gap-2">
+                  {items.map((item) => {
+                    const active = isActiveRoute(pathname, item.path);
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => navigate(item.path)}
+                        className={`group flex w-full items-center gap-3 rounded-[20px] px-4 py-3.5 text-left text-sm font-medium transition-all duration-300 flex-shrink-0 ${
+                          active
+                            ? 'bg-gradient-to-r from-wine/10 via-peach/65 to-white text-wine shadow-[0_14px_32px_rgba(109,31,61,0.12)] ring-1 ring-wine/10'
+                            : 'text-softgray hover:bg-white/80 hover:text-charcoal hover:shadow-soft'
+                        }`}
+                      >
+                        <span className={`flex h-10 w-10 items-center justify-center rounded-2xl transition-all duration-300 flex-shrink-0 ${active ? 'bg-wine text-cream shadow-[0_12px_28px_rgba(109,31,61,0.18)]' : 'bg-beige/55 text-charcoal group-hover:bg-peach/70'}`}>
+                          <item.icon size={18} />
+                        </span>
+                        <span className="flex-1 truncate">{item.label}</span>
+                        {active && <span className="h-2.5 w-2.5 rounded-full bg-wine flex-shrink-0" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             );
           })}
         </nav>
 
-        <div className="mt-6 rounded-[24px] border border-white/80 bg-white/80 p-4 shadow-soft">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-softgray">Signed in as</p>
-              <p className="mt-2 text-sm font-semibold text-charcoal">{user?.name || 'Admin'}</p>
-              <p className="text-xs text-softgray capitalize">{user?.role || 'admin'}</p>
-            </div>
-            <div className="rounded-2xl bg-olive/15 px-3 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-olive">
-              Live
-            </div>
-          </div>
-          <Button variant="outline" className="mt-4 w-full justify-center" onClick={handleLogout}>
-            <LogOut size={16} /> Logout
-          </Button>
-        </div>
       </aside>
 
       {mobileOpen && (
@@ -172,22 +178,37 @@ export const AppShell = ({ children, navigation, isDark, setIsDark, mobileOpen, 
                   </select>
                 </div>
               </div>
-              <div className="mt-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-softgray">
-                <span>{activeItem?.label || 'Dashboard'}</span>
-                <span>•</span>
-                <span>Warm hospitality operations</span>
+              <div className="mt-2 flex items-center gap-3">
+                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-softgray">
+                  <span>{activeItem?.label || 'Dashboard'}</span>
+                </div>
+
+                {user?.role === 'admin' && (
+                  <div className="ml-2 flex items-center gap-2">
+                    <span className="rounded-full bg-wine/10 px-2 py-1 text-xs font-semibold text-wine">ADMIN</span>
+                    <button
+                      onClick={() => navigate('/reports')}
+                      className="text-xs text-softgray hover:text-charcoal underline"
+                      title="Audit Log / Reports"
+                    >
+                      Audit Log
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
             <button
-              onClick={() => setIsDark(!isDark)}
-              className="hidden h-11 w-11 items-center justify-center rounded-2xl border border-white/80 bg-white/80 text-softgray shadow-soft transition-transform hover:-translate-y-0.5 sm:inline-flex"
+              onClick={() => setCartOpen(true)}
+              className="relative hidden h-11 w-11 items-center justify-center rounded-2xl border border-white/80 bg-white/80 text-softgray shadow-soft transition-transform hover:-translate-y-0.5 sm:inline-flex"
+              title="Shopping Cart"
             >
-              {isDark ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-
-            <button className="hidden h-11 w-11 items-center justify-center rounded-2xl border border-white/80 bg-white/80 text-softgray shadow-soft transition-transform hover:-translate-y-0.5 sm:inline-flex">
-              <Bell size={18} />
+              <ShoppingCart size={18} />
+              {cartItems.length > 0 && (
+                <span className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-wine text-xs font-bold text-cream">
+                  {cartItems.length}
+                </span>
+              )}
             </button>
 
             <div className="relative hidden sm:block">
@@ -223,6 +244,8 @@ export const AppShell = ({ children, navigation, isDark, setIsDark, mobileOpen, 
 
         <main className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</main>
       </div>
+
+      <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
     </div>
   );
 };

@@ -1,203 +1,383 @@
-# DINE IN - Professional Restaurant Management System
+# 🍽️ DINE-IN - Restaurant Management System
 
-A modern, full-stack Restaurant Management System built with Node.js, Express.js, React, MongoDB, and Tailwind CSS. This system provides a professional dashboard for managing orders, reservations, tables, menu items, and inventory with real restaurant operational logic.
+A modern, full-stack restaurant management platform with real-time reservations, orders, inventory tracking, and comprehensive analytics.
 
-## 🌟 Features
+## 📋 Features
 
 ### Core Functionality
-- **Authentication & Authorization**: JWT-based auth with admin and staff roles
-- **Order Management**: Create, track, and manage orders with real-time updates
-- **Table Management**: Visual table layout with status management
-- **Reservations**: Book tables with conflict prevention and validation
-- **Menu Management**: Add, edit, delete menu items with stock tracking
-- **Inventory Management**: Real-time stock monitoring with low-stock alerts
-- **Analytics Dashboard**: Sales reports, order tracking, and key metrics
+- ✅ **Table Management** - Interactive table status tracking and allocation
+- ✅ **Reservations** - Smart booking system with table availability checking
+- ✅ **Order Management** - Real-time order tracking with item status updates
+- ✅ **Menu Management** - Digital menu with inventory integration
+- ✅ **Inventory Control** - Stock tracking with automatic alerts
+- ✅ **User Authentication** - Secure role-based access control (Admin/Staff/Manager)
+- ✅ **Analytics & Reports** - Sales tracking, revenue analysis, and performance metrics
+- ✅ **Mobile Responsive** - Works seamlessly on desktop, tablet, and mobile devices
 
-### Advanced Features
-- Role-based access control (Admin & Staff)
-- Automatic inventory deduction on orders
-- Low stock alerts and notifications
-- Payment processing workflow
-- Responsive mobile-first design
-- Dark mode support
-- Real-time status updates
+### Admin Features
+- Staff user management and role assignment
+- Menu item creation and inventory management
+- Table configuration and layout
+- Real-time order and reservation monitoring
+- Revenue and performance reports
+- System settings and configuration
 
-## 🏗️ Project Structure
+### Staff Features
+- View and manage reservations
+- Process and track orders
+- Update table status
+- View menu and inventory
+- Basic analytics access
+
+## 🏗️ Architecture
+
+### Tech Stack
+
+**Frontend:**
+- React 18+ with Vite
+- Tailwind CSS for styling
+- Lucide React icons
+- Zustand for state management
+- Axios for HTTP requests
+- date-fns for date formatting
+
+**Backend:**
+- Node.js with Express.js
+- MongoDB with Mongoose
+- JWT authentication
+- bcryptjs for password hashing
+- CORS enabled
+
+**Deployment:**
+- Docker containerization (Backend)
+- npm package management
+
+## 📁 Project Structure
 
 ```
 DINE-IN/
-├── backend/                    # Express.js API Server
+├── frontend/                 # React application
 │   ├── src/
-│   │   ├── config/            # Configuration files (DB, JWT, Password)
-│   │   ├── controllers/       # Route controllers
-│   │   ├── models/            # Mongoose models
-│   │   ├── routes/            # API routes
-│   │   ├── middleware/        # Auth & Error handling
-│   │   ├── services/          # Business logic layer
-│   │   ├── utils/             # Utilities & validators
-│   │   └── server.js          # Main server file
+│   │   ├── components/      # Reusable UI components
+│   │   ├── pages/           # Page components (Dashboard, Orders, etc.)
+│   │   ├── services/        # API service layer
+│   │   ├── context/         # Global state (Zustand)
+│   │   └── App.jsx
 │   ├── package.json
-│   ├── .env.example
-│   └── README.md
+│   ├── tailwind.config.js
+│   └── vite.config.js
 │
-└── frontend/                   # React Application
-    ├── src/
-    │   ├── components/        # Reusable UI components
-    │   ├── pages/            # Page components
-    │   ├── services/         # API service layer
-    │   ├── context/          # State management (Zustand)
-    │   ├── App.jsx           # Main app component
-    │   └── main.jsx          # Entry point
-    ├── public/               # Static files
-    ├── package.json
-    ├── tailwind.config.js
-    └── README.md
+├── backend/                  # Express.js API
+│   ├── src/
+│   │   ├── controllers/     # Route controllers
+│   │   ├── models/          # Mongoose schemas
+│   │   ├── routes/          # API routes
+│   │   ├── services/        # Business logic
+│   │   ├── middleware/      # Auth, error handling
+│   │   ├── config/          # Database, JWT config
+│   │   └── utils/           # Helpers and validators
+│   ├── scripts/             # Utility scripts
+│   ├── tests/               # Test files
+│   ├── Dockerfile
+│   ├── package.json
+│   └── server.js
+│
+├── docker-compose.yml        # Docker orchestration
+├── package.json             # Root package.json
+└── README.md
 ```
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js v16+ and npm
+- Node.js (v16 or higher)
+- npm or yarn
 - MongoDB (local or Atlas)
 - Git
 
-### Backend Setup
+### Installation
 
-1. **Clone and navigate to backend**
-```bash
-cd backend
-cp .env.example .env
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/dine-in.git
+   cd DINE-IN
+   ```
+
+2. **Setup Backend**
+   ```bash
+   cd backend
+   npm install
+   ```
+
+3. **Setup Frontend**
+   ```bash
+   cd ../frontend
+   npm install
+   ```
+
+### Configuration
+
+1. **Backend Configuration**
+   - Create `.env` file in `backend/` directory:
+   ```env
+   MONGODB_URI=mongodb://localhost:27017/dine-in
+   JWT_SECRET=your_jwt_secret_key_here
+   PORT=5001
+   NODE_ENV=development
+   ```
+
+2. **Frontend Configuration**
+   - Create `.env` file in `frontend/` directory:
+   ```env
+   VITE_API_URL=http://localhost:5001
+   ```
+
+### Running the Application
+
+1. **Start MongoDB** (if running locally)
+   ```bash
+   mongod
+   ```
+
+2. **Start Backend Server**
+   ```bash
+   cd backend
+   npm run dev
+   ```
+   Backend runs on: `http://localhost:5001`
+
+3. **Start Frontend Development Server**
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+   Frontend runs on: `http://localhost:5173`
+
+4. **Seed Database** (Optional - adds sample data)
+   ```bash
+   cd backend
+   node seedAll.js
+   ```
+
+### Default Admin Account
+After seeding, use these credentials to login:
+- Email: `admin@dine-in.com`
+- Password: `password123`
+
+## 📚 API Documentation
+
+### Authentication Endpoints
+```
+POST   /auth/register        - Register new user
+POST   /auth/login           - Login user
+GET    /auth/me              - Get current user
+PATCH  /auth/profile         - Update profile
+GET    /auth/users           - Get all users (Admin)
+PATCH  /auth/users/:id/role  - Update user role (Admin)
 ```
 
-2. **Install dependencies**
-```bash
-npm install
+### Tables Endpoints
+```
+GET    /tables               - Get all tables
+GET    /tables/available     - Get available tables (with guest count filtering)
+GET    /tables/:id           - Get table details
+POST   /tables               - Create new table (Admin only)
+PATCH  /tables/:id           - Update table
+PATCH  /tables/:id/status    - Update table status
+DELETE /tables/:id           - Delete table (Admin only)
+GET    /tables/statistics    - Get table statistics (Admin)
 ```
 
-3. **Configure environment variables** (.env)
+### Reservations Endpoints
 ```
-PORT=5000
-NODE_ENV=development
-MONGODB_URI=mongodb://localhost:27017/dine-in
-JWT_SECRET=your-super-secret-key
-JWT_EXPIRE=7d
-BCRYPT_ROUNDS=10
-CORS_ORIGIN=http://localhost:3000
-```
-
-4. **Start MongoDB** (if running locally)
-```bash
-mongod
+GET    /reservations         - Get all reservations (with status filtering)
+GET    /reservations/:id     - Get reservation details
+POST   /reservations         - Create new reservation
+PATCH  /reservations/:id     - Update reservation
+PATCH  /reservations/:id/confirm   - Confirm reservation
+PATCH  /reservations/:id/complete  - Complete reservation
+PATCH  /reservations/:id/cancel    - Cancel reservation
+DELETE /reservations/:id     - Delete reservation
+GET    /reservations/upcoming      - Get upcoming reservations
 ```
 
-5. **Start the backend server**
-```bash
-npm run dev
+### Menu Endpoints
+```
+GET    /menu                 - Get all menu items
+GET    /menu/:id             - Get menu item details
+POST   /menu                 - Create menu item (Admin only)
+PATCH  /menu/:id             - Update menu item
+DELETE /menu/:id             - Delete menu item (Admin only)
+GET    /menu/available       - Get available items
+GET    /menu/low-stock       - Get low stock items
 ```
 
-The API will be available at `http://localhost:5000`
-
-### Frontend Setup
-
-1. **Navigate to frontend**
-```bash
-cd frontend
-npm install
+### Orders Endpoints
+```
+GET    /orders               - Get all orders
+GET    /orders/:id           - Get order details
+POST   /orders               - Create new order
+PATCH  /orders/:id           - Update order
+PATCH  /orders/:id/status    - Update order status
+DELETE /orders/:id           - Delete order
+GET    /orders/active        - Get active orders
 ```
 
-2. **Start the development server**
-```bash
-npm start
-```
+## 🗄️ Database Schema
 
-The application will open at `http://localhost:3000`
-
-### Demo Credentials
-- **Email**: admin@dine-in.com
-- **Password**: password123
-- **Role**: Admin (Full access to all features)
-
-## 📚 API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-- `GET /api/auth/profile` - Get user profile
-- `PATCH /api/auth/profile` - Update user profile
-- `GET /api/auth/users` - Get all users (Admin only)
-
-### Menu
-- `GET /api/menu` - Get all menu items
-- `POST /api/menu` - Create menu item (Admin)
-- `PATCH /api/menu/:id` - Update menu item (Admin)
-- `DELETE /api/menu/:id` - Delete menu item (Admin)
-- `GET /api/menu/low-stock` - Get low stock items
+### Users
+- _id, name, email, password (hashed), role, phone, timestamps
 
 ### Tables
-- `GET /api/tables` - Get all tables
-- `POST /api/tables` - Create table (Admin)
-- `PATCH /api/tables/:id` - Update table (Admin)
-- `PATCH /api/tables/:id/status` - Update table status
-- `GET /api/tables/available` - Get available tables
-- `PATCH /api/tables/:id/free` - Free a table
+- _id, tableNumber, capacity, status (available/reserved/occupied), location, notes, isActive, timestamps
+
+### MenuItems
+- _id, name, category, description, price, image, stockQuantity, isAvailable, preparationTime, isVegetarian, isSpicy, timestamps
 
 ### Reservations
-- `POST /api/reservations` - Create reservation
-- `GET /api/reservations` - Get all reservations
-- `GET /api/reservations/:id` - Get reservation details
-- `PATCH /api/reservations/:id` - Update reservation
-- `PATCH /api/reservations/:id/confirm` - Confirm reservation
-- `PATCH /api/reservations/:id/complete` - Complete reservation
-- `PATCH /api/reservations/:id/cancel` - Cancel reservation
+- _id, customerName, phone, email, table (ref), reservationTime, guests, status (pending/confirmed/completed/cancelled), specialRequests, timestamps
 
 ### Orders
-- `POST /api/orders` - Create order
-- `GET /api/orders` - Get all orders
-- `GET /api/orders/:id` - Get order details
-- `PATCH /api/orders/:id/status` - Update order status
-- `PATCH /api/orders/:id/payment` - Process payment
-- `PATCH /api/orders/:id/add-item` - Add item to order
-- `PATCH /api/orders/:id/remove-item` - Remove item from order
-- `GET /api/orders/active` - Get active orders
-- `GET /api/orders/daily-sales` - Get daily sales data
+- _id, orderNumber, table (ref), items (array), totalAmount, subtotal, tax, status, timestamps
 
-### Inventory
-- `GET /api/inventory` - Get full inventory (Admin)
-- `GET /api/inventory/low-stock` - Get low stock items
-- `PATCH /api/inventory/:id` - Update inventory
-- `PATCH /api/inventory/:id/restock` - Restock item
+## 🔐 Authentication & Authorization
 
-## 🗄️ Database Models
+The system uses JWT-based authentication with role-based access control:
 
-### User
-- name, email, password (hashed)
-- role (admin/staff)
-- phone, isActive
+- **Admin**: Full system access
+- **Manager**: Dashboard, reports, staff management
+- **Staff**: Order and reservation management, basic analytics
 
-### MenuItem
-- name, category, description
-- price, image, stockQuantity
-- thresholdLevel, isAvailable
-- isVegetarian, isSpicy
+## 📱 Responsive Design
 
-### Table
-- tableNumber, capacity
-- status (available/reserved/occupied)
-- location, currentOrder, currentReservation
+The application is built with mobile-first responsive design using Tailwind CSS:
+- Mobile devices (< 640px)
+- Tablets (640px - 1024px)  
+- Desktops (1024px+)
 
-### Reservation
-- customerName, phone, email
-- table, reservationTime, guests
-- status (pending/confirmed/completed/cancelled)
-- specialRequests
+All pages are fully responsive with adaptive layouts and touch-friendly interfaces.
 
-### Order
-- orderNumber, table, items
-- subtotal, tax, totalAmount
-- orderStatus, paymentStatus
-- createdBy, startedAt, completedAt
+## 🧪 Testing
 
-### OrderItem
+### Run E2E Tests
+```bash
+npm run test:e2e
+```
+
+### Run Unit Tests
+```bash
+cd backend
+npm run test
+```
+
+## 📦 Build & Deployment
+
+### Build Frontend
+```bash
+cd frontend
+npm run build
+```
+Output: `frontend/dist/`
+
+### Build Docker Image
+```bash
+docker build -t dine-in-backend ./backend
+```
+
+### Run with Docker Compose
+```bash
+docker-compose up
+```
+
+## 🔧 Development
+
+### Code Style
+- ESLint configured for JavaScript
+- Prettier for code formatting
+- Consistent naming conventions
+
+### Git Workflow
+```bash
+# Create feature branch
+git checkout -b feature/your-feature
+
+# Commit changes
+git commit -m "feat: add new feature"
+
+# Push to remote
+git push origin feature/your-feature
+
+# Create Pull Request
+```
+
+## 📊 Sample Data
+
+The database comes pre-populated with:
+- **11 Menu Items** - Appetizers, mains, desserts, beverages
+- **8 Tables** - Various capacities and locations
+- **3 Reservations** - At different statuses for testing
+- **2 Orders** - With different items and statuses
+
+Run `node seedAll.js` in the backend directory to repopulate sample data.
+
+## 🐛 Troubleshooting
+
+### MongoDB Connection Issues
+- Ensure MongoDB is running: `mongod`
+- Check connection string in `.env`
+- Verify database name is correct
+
+### CORS Errors
+- Check `MONGODB_URI` in backend `.env`
+- Ensure frontend API URL matches backend in `.env`
+
+### Port Already in Use
+```bash
+# Kill process using port 5001
+lsof -ti :5001 | xargs kill -9
+
+# Or change port in backend .env
+```
+
+### Build Errors
+```bash
+# Clear cache and reinstall
+rm -rf node_modules package-lock.json
+npm install
+```
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 👥 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📞 Support
+
+For issues, questions, or suggestions, please open an issue on GitHub.
+
+## 🎯 Future Enhancements
+
+- [ ] Push notifications for orders
+- [ ] QR code table ordering
+- [ ] Payment integration
+- [ ] Customer loyalty program
+- [ ] Multi-location support
+- [ ] Advanced analytics with charts
+- [ ] Staff scheduling module
+- [ ] Online booking with customer accounts
+
+---
+
+**Last Updated:** May 2026
+**Version:** 1.0.0
+**Status:** Production Ready ✅
 - menuItem, quantity, unitPrice, subtotal
 - notes, status
 

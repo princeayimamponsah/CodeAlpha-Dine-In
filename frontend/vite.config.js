@@ -12,5 +12,20 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('recharts') || id.includes('d3') || id.includes('lodash')) {
+              return 'vendor_charts';
+            }
+            if (id.includes('lucide-react')) {
+              return 'vendor_icons';
+            }
+            return 'vendor';
+          }
+        }
+      }
+    }
   }
 })

@@ -2,7 +2,9 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/database');
+const { hashPassword } = require('./config/password');
 const errorHandler = require('./middleware/errorHandler');
+const User = require('./models/User');
 
 // Route imports
 const authRoutes = require('./routes/authRoutes');
@@ -13,6 +15,42 @@ const orderRoutes = require('./routes/orderRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
 
 const app = express();
+
+const seedDefaultAuthUsers = async () => {
+  if (process.env.NODE_ENV === 'production') {
+    return;
+  }
+
+  const defaults = [
+    {
+      name: 'Admin User',
+      email: 'admin@dine-in.com',
+      password: 'password123',
+      role: 'admin',
+    },
+    {
+      name: 'Staff Member',
+      email: 'staff@dine-in.com',
+      password: 'password123',
+      role: 'staff',
+    },
+  ];
+
+  for (const userData of defaults) {
+    const existingUser = await User.findOne({ email: userData.email });
+    if (existingUser) {
+      continue;
+    }
+
+    const password = await hashPassword(userData.password);
+    await User.create({
+      name: userData.name,
+      email: userData.email,
+      password,
+      role: userData.role,
+    });
+  }
+};
 
 // Middleware
 app.use(cors());
@@ -68,6 +106,7 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   await connectDB();
+  await seedDefaultAuthUsers();
 
   app.listen(PORT, () => {
     console.log(`
