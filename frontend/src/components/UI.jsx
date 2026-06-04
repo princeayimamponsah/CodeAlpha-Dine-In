@@ -13,12 +13,12 @@ export const Toast = () => {
           key={notification.id}
           className={`animate-slide-in flex items-start gap-3 rounded-2xl border border-white/40 p-4 text-charcoal shadow-premium backdrop-blur-xl ${
             notification.type === 'success'
-              ? 'bg-gradient-to-r from-olive/20 to-cream'
+              ? 'bg-olive/15'
               : notification.type === 'error'
-              ? 'bg-gradient-to-r from-wine/15 to-cream'
+              ? 'bg-wine/10'
               : notification.type === 'warning'
-              ? 'bg-gradient-to-r from-gold/20 to-cream'
-              : 'bg-gradient-to-r from-peach/35 to-cream'
+              ? 'bg-gold/15'
+              : 'bg-beige/25'
           }`}
         >
           <div className="mt-0.5 shrink-0">
@@ -60,10 +60,10 @@ export const Badge = ({ text, variant = 'default', size = 'md' }) => {
 export const Card = ({ children, className = '', variant = 'default' }) => {
   const variantClasses = {
     default: 'bg-white/78 border border-white/75 shadow-premium backdrop-blur-xl',
-    primary: 'bg-gradient-to-br from-white/92 via-cream/80 to-peach/30 border border-beige/70 shadow-premium backdrop-blur-xl',
-    success: 'bg-gradient-to-br from-white/92 via-cream/85 to-olive/10 border border-olive/15 shadow-premium backdrop-blur-xl',
-    danger: 'bg-gradient-to-br from-white/92 via-cream/85 to-wine/10 border border-wine/15 shadow-premium backdrop-blur-xl',
-    warning: 'bg-gradient-to-br from-white/92 via-cream/85 to-gold/15 border border-gold/20 shadow-premium backdrop-blur-xl',
+    primary: 'bg-peach/35 border border-beige/70 shadow-premium backdrop-blur-xl',
+    success: 'bg-olive/10 border border-olive/15 shadow-premium backdrop-blur-xl',
+    danger: 'bg-wine/10 border border-wine/15 shadow-premium backdrop-blur-xl',
+    warning: 'bg-gold/15 border border-gold/20 shadow-premium backdrop-blur-xl',
   };
 
   return (
@@ -91,7 +91,7 @@ export const Button = ({
   };
 
   const variantClasses = {
-    primary: 'bg-gradient-to-r from-wine via-wine to-gold text-cream shadow-[0_18px_40px_rgba(109,31,61,0.22)] hover:-translate-y-0.5 hover:shadow-[0_24px_48px_rgba(109,31,61,0.25)] disabled:opacity-50',
+    primary: 'bg-wine text-cream shadow-[0_18px_40px_rgba(109,31,61,0.22)] hover:-translate-y-0.5 hover:bg-wine/95 hover:shadow-[0_24px_48px_rgba(109,31,61,0.25)] disabled:opacity-50',
     secondary: 'border border-beige/80 bg-peach/75 text-charcoal shadow-sm hover:-translate-y-0.5 hover:bg-peach disabled:opacity-60',
     success: 'bg-olive text-cream shadow-sm hover:-translate-y-0.5 hover:bg-olive/90 disabled:opacity-60',
     danger: 'bg-wine text-cream shadow-sm hover:-translate-y-0.5 hover:bg-wine/90 disabled:opacity-60',
@@ -179,7 +179,7 @@ export const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal/45 px-4 backdrop-blur-xl">
-      <div className={`${sizeClasses[size]} w-full max-h-[90vh] rounded-[28px] border border-white/70 bg-gradient-to-br from-cream via-white to-peach/20 shadow-[0_32px_100px_rgba(43,43,43,0.22)] animate-fade-in flex flex-col overflow-hidden`}>
+      <div className={`${sizeClasses[size]} w-full max-h-[90vh] rounded-[28px] border border-white/70 bg-cream shadow-[0_32px_100px_rgba(43,43,43,0.22)] animate-fade-in flex flex-col overflow-hidden`}>
         <div className="flex items-center justify-between border-b border-beige/60 px-6 py-5 flex-shrink-0">
           <h2 className="text-lg font-semibold text-charcoal">{title}</h2>
           <button
@@ -196,7 +196,7 @@ export const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
 };
 
 export const LoadingSpinner = () => (
-  <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(247,214,194,0.75),_transparent_42%),linear-gradient(180deg,#FFF7F2_0%,#FFFDFB_52%,#FFF8F4_100%)]">
+  <div className="flex min-h-screen items-center justify-center bg-cream">
     <div className="flex flex-col items-center gap-4 rounded-[28px] border border-white/75 bg-white/75 px-8 py-10 shadow-premium backdrop-blur-xl">
       <img src={dineInLogo} alt="DINE-IN" className="h-14 w-auto select-none object-contain" draggable="false" />
       <div className="h-14 w-14 animate-spin rounded-full border-2 border-beige border-t-wine"></div>
@@ -226,15 +226,15 @@ export const SectionHeader = ({ eyebrow, title, description, action }) => (
 
 export const MetricCard = ({ icon: Icon, label, value, trend, tone = 'wine', hint }) => {
   const toneClasses = {
-    wine: 'from-wine/18 to-peach/30 text-wine',
-    peach: 'from-peach/55 to-cream text-charcoal',
-    gold: 'from-gold/20 to-cream text-gold',
-    olive: 'from-olive/18 to-cream text-olive',
+    wine: 'bg-wine/15 text-wine',
+    peach: 'bg-peach/35 text-charcoal',
+    gold: 'bg-gold/15 text-gold',
+    olive: 'bg-olive/15 text-olive',
   };
 
   return (
     <Card className="relative overflow-hidden">
-      <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${toneClasses[tone]}`} />
+      <div className={`absolute inset-x-0 top-0 h-1 ${tone === 'wine' ? 'bg-wine' : tone === 'gold' ? 'bg-gold' : tone === 'olive' ? 'bg-olive' : 'bg-peach'}`} />
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-softgray">{label}</p>
@@ -251,7 +251,7 @@ export const MetricCard = ({ icon: Icon, label, value, trend, tone = 'wine', hin
             </p>
           )}
         </div>
-        <div className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${toneClasses[tone]} shadow-soft`}>
+        <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${toneClasses[tone]} shadow-soft`}>
           <Icon size={22} />
         </div>
       </div>

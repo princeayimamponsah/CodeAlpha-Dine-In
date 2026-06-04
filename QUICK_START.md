@@ -161,7 +161,7 @@ PORT=5001
 ### Port 3000 Already in Use
 ```bash
 # Kill process or change port in frontend
-npm start -- --port 3001
+npm start -- --port 3000
 ```
 
 ### CORS Error

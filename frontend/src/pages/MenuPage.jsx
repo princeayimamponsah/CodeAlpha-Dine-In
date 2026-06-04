@@ -222,8 +222,8 @@ export const MenuPage = () => {
             const lowStock = item.stockQuantity <= item.thresholdLevel;
             return (
               <Card key={item._id} className="group relative overflow-hidden">
-                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-wine via-peach to-gold" />
-                <div className="relative mb-4 overflow-hidden rounded-[24px] bg-gradient-to-br from-peach to-gold/70">
+                <div className="absolute inset-x-0 top-0 h-1 bg-gold" />
+                <div className="relative mb-4 overflow-hidden rounded-[24px] bg-gold/20">
                   <div className="aspect-[4/3] w-full">
                     <img
                       src={item.image}

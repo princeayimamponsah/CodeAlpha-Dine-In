@@ -125,17 +125,11 @@ export const ReportsPage = () => {
           </div>
           <ResponsiveContainer width="100%" height={320}>
             <AreaChart data={monthlySales}>
-              <defs>
-                <linearGradient id="reportsRevenue" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#6B1E1E" stopOpacity={0.32} />
-                  <stop offset="100%" stopColor="#F8D7C4" stopOpacity={0.06} />
-                </linearGradient>
-              </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#E9D7C9" vertical={false} />
               <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: '#6B6B6B' }} />
               <YAxis tickLine={false} axisLine={false} tick={{ fill: '#6B6B6B' }} />
               <Tooltip {...tooltipStyle} formatter={(value, name) => [name === 'revenue' ? `GHS ${Number(value).toLocaleString()}` : value, name]} />
-              <Area type="monotone" dataKey="revenue" stroke="#6B1E1E" strokeWidth={3} fill="url(#reportsRevenue)" />
+              <Area type="monotone" dataKey="revenue" stroke="#6B1E1E" strokeWidth={3} fill="#F8D7C4" fillOpacity={0.45} />
             </AreaChart>
           </ResponsiveContainer>
         </Card>
@@ -183,7 +177,7 @@ export const ReportsPage = () => {
                   <Badge text={`${item.share}% share`} variant="info" size="sm" />
                 </div>
                 <div className="mt-3 h-2 rounded-full bg-beige/60">
-                  <div className="h-2 rounded-full bg-gradient-to-r from-wine via-peach to-gold" style={{ width: `${item.share}%` }} />
+                  <div className="h-2 rounded-full bg-wine" style={{ width: `${item.share}%` }} />
                 </div>
               </div>
             ))}

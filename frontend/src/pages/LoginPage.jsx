@@ -79,15 +79,14 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(247,214,194,0.8),_transparent_36%),radial-gradient(circle_at_bottom_right,_rgba(109,31,61,0.1),_transparent_30%),linear-gradient(180deg,#FFF7F2_0%,#FFFDFB_52%,#FFF8F4_100%)] px-4 py-6 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-cream px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto grid min-h-[calc(100vh-3rem)] max-w-7xl items-center gap-6 lg:grid-cols-[1.05fr_0.95fr]">
         <motion.section
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
-          className="relative overflow-hidden rounded-[36px] border border-white/75 bg-[linear-gradient(180deg,rgba(109,31,61,0.98),rgba(109,31,61,0.86))] p-8 text-cream shadow-[0_30px_90px_rgba(109,31,61,0.28)] lg:p-10"
+          className="relative overflow-hidden rounded-[36px] border border-gold/25 bg-wine p-8 text-cream shadow-[0_30px_90px_rgba(109,31,61,0.28)] lg:p-10"
         >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(247,214,194,0.28),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(212,163,115,0.14),transparent_26%)]" />
           <div className="relative z-10 flex h-full flex-col justify-between">
             <div>
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-cream/90 backdrop-blur-md">
@@ -124,7 +123,7 @@ export const LoginPage = () => {
           className="relative"
         >
           <Card className="relative overflow-hidden">
-            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-wine via-peach to-gold" />
+            <div className="absolute inset-x-0 top-0 h-1 bg-gold" />
             <div className="mb-8 text-center">
               <BrandMark className="mx-auto mb-4 w-52" imgClassName="w-full" />
               <h2 className="text-4xl font-semibold tracking-tight text-charcoal">Welcome back</h2>

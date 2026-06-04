@@ -53,8 +53,8 @@ export const AppShell = ({ children, navigation, mobileOpen, setMobileOpen }) =>
   };
 
   return (
-    <div className="relative min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(247,214,194,0.65),_transparent_36%),radial-gradient(circle_at_top_right,_rgba(212,163,115,0.16),_transparent_24%),linear-gradient(180deg,#FFF7F2_0%,#FFFDFB_48%,#FFF8F4_100%)] text-charcoal">
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-80 flex-col overflow-y-auto border-r border-white/70 bg-[linear-gradient(180deg,rgba(255,247,242,0.96),rgba(255,251,248,0.96))] px-5 py-6 shadow-[12px_0_45px_rgba(43,43,43,0.06)] backdrop-blur-2xl lg:flex">
+    <div className="relative min-h-screen bg-cream text-charcoal">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-80 flex-col overflow-y-auto border-r border-white/70 bg-cream px-5 py-6 shadow-[12px_0_45px_rgba(43,43,43,0.06)] backdrop-blur-2xl lg:flex">
         <div className="mb-8 flex items-center gap-3 px-2">
           <BrandMark className="w-[11rem]" imgClassName="w-full" />
         </div>
@@ -87,7 +87,7 @@ export const AppShell = ({ children, navigation, mobileOpen, setMobileOpen }) =>
                         onClick={() => navigate(item.path)}
                         className={`group flex w-full items-center gap-3 rounded-[20px] px-4 py-3.5 text-left text-sm font-medium transition-all duration-300 flex-shrink-0 ${
                           active
-                            ? 'bg-gradient-to-r from-wine/10 via-peach/65 to-white text-wine shadow-[0_14px_32px_rgba(109,31,61,0.12)] ring-1 ring-wine/10'
+                            ? 'bg-wine/10 text-wine shadow-[0_14px_32px_rgba(109,31,61,0.12)] ring-1 ring-wine/10'
                             : 'text-softgray hover:bg-white/80 hover:text-charcoal hover:shadow-soft'
                         }`}
                       >
@@ -111,7 +111,7 @@ export const AppShell = ({ children, navigation, mobileOpen, setMobileOpen }) =>
         <div className="fixed inset-0 z-40 bg-charcoal/30 backdrop-blur-sm lg:hidden" onClick={() => setMobileOpen(false)} />
       )}
 
-      <aside className={`fixed inset-y-0 left-0 z-50 w-[85vw] max-w-[20rem] border-r border-white/70 bg-[linear-gradient(180deg,rgba(255,247,242,0.98),rgba(255,251,248,0.98))] px-5 py-6 shadow-[16px_0_45px_rgba(43,43,43,0.12)] backdrop-blur-2xl transition-transform duration-300 lg:hidden ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-[85vw] max-w-[20rem] border-r border-white/70 bg-cream px-5 py-6 shadow-[16px_0_45px_rgba(43,43,43,0.12)] backdrop-blur-2xl transition-transform duration-300 lg:hidden ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="mb-6 flex items-center justify-between">
           <BrandMark className="w-36" imgClassName="w-full" />
           <button className="rounded-full bg-white/80 p-2 text-softgray shadow-soft" onClick={() => setMobileOpen(false)}>
@@ -216,7 +216,7 @@ export const AppShell = ({ children, navigation, mobileOpen, setMobileOpen }) =>
                 onClick={() => setProfileOpen((value) => !value)}
                 className="flex items-center gap-3 rounded-[20px] border border-white/80 bg-white/80 px-3 py-2.5 shadow-soft transition-transform hover:-translate-y-0.5"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-wine to-gold text-sm font-semibold text-cream">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-wine text-sm font-semibold text-cream">
                   {(user?.name || 'D').slice(0, 1).toUpperCase()}
                 </div>
                 <div className="text-left">

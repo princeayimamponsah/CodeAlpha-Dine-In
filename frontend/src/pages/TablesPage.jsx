@@ -179,7 +179,7 @@ export const TablesPage = () => {
             const tone = tableTone[table.status] || tableTone.available;
             return (
               <Card key={table._id} className="relative overflow-hidden">
-                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-wine via-peach to-gold" />
+                <div className="absolute inset-x-0 top-0 h-1 bg-wine" />
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-3">

@@ -64,7 +64,7 @@ export const SignupPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(247,214,194,0.65),_transparent_42%),linear-gradient(180deg,#FFF7F2_0%,#fff_100%)] p-4">
+    <div className="flex min-h-screen items-center justify-center bg-cream p-4">
       <Card className="w-full max-w-md">
         <div className="mb-8 text-center">
           <BrandMark className="mx-auto mb-4 w-52" imgClassName="w-full" />

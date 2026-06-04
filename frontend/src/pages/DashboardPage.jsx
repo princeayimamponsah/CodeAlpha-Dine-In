@@ -125,14 +125,8 @@ const TrendSparkline = ({ values, positive = true }) => {
 
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className="h-7 w-[90px]" aria-hidden="true">
-      <defs>
-        <linearGradient id={`spark-${positive ? 'up' : 'down'}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={positive ? '#6B1E1E' : '#D4A056'} stopOpacity="0.4" />
-          <stop offset="100%" stopColor={positive ? '#F8D7C4' : '#FFF9F5'} stopOpacity="0.05" />
-        </linearGradient>
-      </defs>
       <polyline
-        fill={`url(#spark-${positive ? 'up' : 'down'})`}
+        fill="none"
         stroke={positive ? '#6B1E1E' : '#D4A056'}
         strokeWidth="2"
         strokeLinejoin="round"
@@ -145,15 +139,15 @@ const TrendSparkline = ({ values, positive = true }) => {
 
 const MetricCard = ({ icon: Icon, label, value, change, description, sparkline, tone = 'wine' }) => {
   const toneClasses = {
-    wine: 'from-wine/16 to-peach/35 text-wine',
-    peach: 'from-peach/70 to-cream text-charcoal',
-    gold: 'from-gold/18 to-cream text-gold',
-    green: 'from-olive/18 to-cream text-olive',
+    wine: 'bg-wine/15 text-wine',
+    peach: 'bg-peach/35 text-charcoal',
+    gold: 'bg-gold/15 text-gold',
+    green: 'bg-olive/15 text-olive',
   };
 
   return (
     <Card className="relative overflow-hidden">
-      <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${toneClasses[tone]}`} />
+      <div className={`absolute inset-x-0 top-0 h-1 ${tone === 'wine' ? 'bg-wine' : tone === 'gold' ? 'bg-gold' : tone === 'green' ? 'bg-olive' : 'bg-peach'}`} />
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-softgray">{label}</p>
@@ -165,7 +159,7 @@ const MetricCard = ({ icon: Icon, label, value, change, description, sparkline, 
             <span className="text-softgray">{description}</span>
           </div>
         </div>
-        <div className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${toneClasses[tone]} shadow-soft`}>
+        <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${toneClasses[tone]} shadow-soft`}>
           <Icon size={22} />
         </div>
       </div>
@@ -365,8 +359,7 @@ export const DashboardPage = () => {
 
   return (
     <div className="space-y-6">
-      <div className="relative overflow-hidden rounded-[36px] border border-white/80 bg-[linear-gradient(135deg,rgba(107,30,30,0.98),rgba(107,30,30,0.88)_50%,rgba(212,160,86,0.92))] p-6 text-cream shadow-[0_28px_80px_rgba(107,30,30,0.22)] lg:p-8">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(248,215,196,0.24),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.12),transparent_28%)]" />
+      <div className="relative overflow-hidden rounded-[36px] border border-gold/25 bg-wine p-6 text-cream shadow-[0_28px_80px_rgba(107,30,30,0.22)] lg:p-8">
         <div className="relative z-10 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
           <div className="max-w-3xl space-y-4">
             <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-cream/90 backdrop-blur-md">
@@ -433,17 +426,11 @@ export const DashboardPage = () => {
               <p className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-softgray">Daily revenue</p>
               <ResponsiveContainer width="100%" height={250}>
                 <AreaChart data={weeklyRevenue}>
-                  <defs>
-                    <linearGradient id="dailyRevenueFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#6B1E1E" stopOpacity={0.35} />
-                      <stop offset="100%" stopColor="#F8D7C4" stopOpacity={0.06} />
-                    </linearGradient>
-                  </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#E9D7C9" vertical={false} />
                   <XAxis dataKey="day" tickLine={false} axisLine={false} tick={{ fill: '#6B6B6B', fontSize: 12 }} />
                   <YAxis tickLine={false} axisLine={false} tick={{ fill: '#6B6B6B', fontSize: 12 }} />
                   <Tooltip {...chartTooltip} formatter={(value) => [formatCurrency(value), 'Revenue']} />
-                  <Area type="monotone" dataKey="value" stroke="#6B1E1E" strokeWidth={3} fill="url(#dailyRevenueFill)" />
+                  <Area type="monotone" dataKey="value" stroke="#6B1E1E" strokeWidth={3} fill="#F8D7C4" fillOpacity={0.45} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -525,17 +512,11 @@ export const DashboardPage = () => {
           </div>
           <ResponsiveContainer width="100%" height={280}>
             <AreaChart data={reservationTrend}>
-              <defs>
-                <linearGradient id="reservationTrendFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#D4A056" stopOpacity={0.32} />
-                  <stop offset="100%" stopColor="#F8D7C4" stopOpacity={0.08} />
-                </linearGradient>
-              </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#E9D7C9" vertical={false} />
               <XAxis dataKey="week" tickLine={false} axisLine={false} tick={{ fill: '#6B6B6B', fontSize: 12 }} />
               <YAxis tickLine={false} axisLine={false} tick={{ fill: '#6B6B6B', fontSize: 12 }} />
               <Tooltip {...chartTooltip} />
-              <Area type="monotone" dataKey="value" stroke="#D4A056" strokeWidth={3} fill="url(#reservationTrendFill)" />
+              <Area type="monotone" dataKey="value" stroke="#D4A056" strokeWidth={3} fill="#D4A056" fillOpacity={0.28} />
             </AreaChart>
           </ResponsiveContainer>
         </Card>
@@ -558,7 +539,7 @@ export const DashboardPage = () => {
                   <Badge text={`${item.value}%`} variant={item.value > 80 ? 'success' : 'info'} size="sm" />
                 </div>
                 <div className="mt-3 h-2 rounded-full bg-beige/55">
-                  <div className="h-2 rounded-full bg-gradient-to-r from-wine via-peach to-gold" style={{ width: `${item.value}%` }} />
+                  <div className="h-2 rounded-full bg-wine" style={{ width: `${item.value}%` }} />
                 </div>
               </div>
             ))}
