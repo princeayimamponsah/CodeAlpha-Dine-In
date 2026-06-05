@@ -1,14 +1,17 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { format } from 'date-fns';
-import { Badge, Button, Card, EmptyState, Input, SectionHeader } from '../components/UI';
+import { Badge, Button, Card, EmptyState, Input, Modal, SectionHeader } from '../components/UI';
 import { orderService } from '../services/apiServices';
-import { useNotificationStore, useAuthStore } from '../context/store';
+import { getReceiptConfig } from '../services/receiptConfig';
+import { useAuthStore, useNotificationStore } from '../context/store';
 import {
   CheckCircle2,
   Clock3,
+  CreditCard,
   Filter,
   Flame,
   ChefHat,
+  Printer,
   RefreshCw,
   Search,
   ShoppingBag,
@@ -29,8 +32,7 @@ const statusMeta = {
 
 const paymentMeta = {
   paid: 'success',
-  partial: 'warning',
-  unpaid: 'error',
+  pending: 'warning',
 };
 
 const formatMoney = (value) => `GHS ${Number(value || 0).toFixed(2)}`;
@@ -40,9 +42,10 @@ export const OrdersPage = () => {
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [billOrder, setBillOrder] = useState(null);
   const addNotification = useNotificationStore((state) => state.addNotification);
   const user = useAuthStore((state) => state.user);
-  const isAdmin = user?.role === 'admin';
+  const receiptConfig = getReceiptConfig();
 
   useEffect(() => {
     fetchOrders();
@@ -67,18 +70,109 @@ export const OrdersPage = () => {
 
   const updateStatus = async (orderId, status) => {
     try {
-      await orderService.updateOrderStatus(orderId, status);
+      const response = await orderService.updateOrderStatus(orderId, status);
       addNotification({
         type: 'success',
         message: `Order moved to ${status}`,
       });
       fetchOrders();
+      return response?.data?.data;
     } catch (error) {
       addNotification({
         type: 'error',
         message: error.response?.data?.message || 'Unable to update order status',
       });
+      return null;
     }
+  };
+
+  const generateBill = async (order) => {
+    const latest =
+      order.status === 'completed'
+        ? order
+        : await updateStatus(order._id, 'completed');
+
+    if (latest) {
+      setBillOrder(latest);
+    }
+  };
+
+  const markOrderPaid = async (orderId, method = 'cash') => {
+    try {
+      const response = await orderService.markOrderPaid(orderId, method);
+      const updatedOrder = response?.data?.data;
+
+      if (billOrder?._id === orderId && updatedOrder) {
+        setBillOrder(updatedOrder);
+      }
+
+      addNotification({
+        type: 'success',
+        message: `Order marked paid via ${method.replace('_', ' ')}`,
+      });
+      fetchOrders();
+    } catch (error) {
+      addNotification({
+        type: 'error',
+        message: error.response?.data?.message || 'Unable to mark order paid',
+      });
+    }
+  };
+
+  const printBill = (order) => {
+    const cashierName = user?.name || user?.email || 'Staff';
+    const paymentMethod = (order.paymentMethod || 'cash').replace('_', ' ');
+    const itemRows = (order.items || [])
+      .map((item) => {
+        const name = item.menuItem?.name || item.menuItem?.itemName || 'Item';
+        const qty = item.quantity || 0;
+        const subtotal = Number(item.subtotal || 0).toFixed(2);
+        return `<tr><td style="padding:8px 0; border-bottom:1px solid #eee;">${name} x${qty}</td><td style="padding:8px 0; border-bottom:1px solid #eee; text-align:right;">GHS ${subtotal}</td></tr>`;
+      })
+      .join('');
+
+    const billHtml = `
+      <html>
+        <head>
+          <title>Bill ${order.orderNumber}</title>
+        </head>
+        <body style="font-family: Arial, sans-serif; padding: 20px; color: #222; max-width: 760px; margin: 0 auto;">
+          <div style="text-align:center; margin-bottom: 16px; border-bottom:2px solid #4a1f34; padding-bottom: 12px;">
+            <h2 style="margin: 0 0 6px; color:#4a1f34; letter-spacing:0.04em;">${receiptConfig.name}</h2>
+            <p style="margin:0; font-size:12px; color:#666;">${receiptConfig.tagline}</p>
+            <p style="margin:6px 0 0; font-size:12px; color:#666;">${receiptConfig.address} | ${receiptConfig.phone}</p>
+          </div>
+          <p style="margin: 0 0 4px;"><strong>Order:</strong> ${order.orderNumber}</p>
+          <p style="margin: 0 0 4px;"><strong>Table:</strong> ${order.table?.tableNumber || '-'}</p>
+          <p style="margin: 0 0 4px;"><strong>Date:</strong> ${format(new Date(order.createdAt), 'dd MMM yyyy, HH:mm')}</p>
+          <p style="margin: 0 0 4px;"><strong>Cashier:</strong> ${cashierName}</p>
+          <p style="margin: 0 0 16px;"><strong>Payment Method:</strong> ${paymentMethod}</p>
+          <table style="width: 100%; border-collapse: collapse; margin-top: 4px;">
+            <tbody>${itemRows}</tbody>
+          </table>
+          <hr style="margin: 12px 0;" />
+          <p style="margin: 4px 0;">Subtotal: GHS ${Number(order.subtotal || 0).toFixed(2)}</p>
+          <p style="margin: 4px 0;">Tax: GHS ${Number(order.tax || 0).toFixed(2)}</p>
+          <p style="margin: 10px 0 0; font-size: 18px; font-weight: 700;">Total: GHS ${Number(order.totalAmount || 0).toFixed(2)}</p>
+          <p style="margin: 16px 0 0;">Payment Status: ${(order.paymentStatus || 'pending').toUpperCase()}</p>
+          <div style="margin-top: 24px; border-top:1px dashed #999; padding-top: 10px; text-align:center; font-size:12px; color:#666;">
+            <p style="margin:0;">${receiptConfig.footerNote}</p>
+          </div>
+        </body>
+      </html>
+    `;
+
+    const printWindow = window.open('', '_blank', 'width=800,height=700');
+    if (!printWindow) {
+      addNotification({ type: 'error', message: 'Unable to open print preview' });
+      return;
+    }
+
+    printWindow.document.open();
+    printWindow.document.write(billHtml);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
   };
 
   const filteredOrders = useMemo(() => {
@@ -143,11 +237,9 @@ export const OrdersPage = () => {
       actions.push({ label: 'Mark Served', target: 'served', variant: 'primary' });
       actions.push({ label: 'Cancel', target: 'cancelled', variant: 'danger' });
     } else if (order.status === 'served') {
-      actions.push({ label: 'Complete Order', target: 'completed', variant: 'primary' });
-    }
-
-    if (actions.length === 0) {
-      return <Badge text="No actions" variant="default" size="sm" />;
+      actions.push({ label: 'Generate Bill', variant: 'primary', onClick: () => generateBill(order) });
+    } else if (order.status === 'completed') {
+      actions.push({ label: 'View Bill', variant: 'outline', onClick: () => setBillOrder(order) });
     }
 
     return (
@@ -157,11 +249,29 @@ export const OrdersPage = () => {
             key={action.label}
             variant={action.variant}
             size="sm"
-            onClick={() => updateStatus(order._id, action.target)}
+            onClick={action.onClick || (() => updateStatus(order._id, action.target))}
           >
             {action.label}
           </Button>
         ))}
+
+        {order.status === 'completed' && order.paymentStatus !== 'paid' && (
+          <>
+            <Button variant="primary" size="sm" onClick={() => markOrderPaid(order._id, 'cash')}>
+              Mark Paid (Cash)
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => markOrderPaid(order._id, 'card')}>
+              Mark Paid (Card)
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => markOrderPaid(order._id, 'mobile_money')}>
+              Mark Paid (Mobile Money)
+            </Button>
+          </>
+        )}
+
+        {actions.length === 0 && !(order.status === 'completed' && order.paymentStatus !== 'paid') && (
+          <Badge text="No actions" variant="default" size="sm" />
+        )}
       </div>
     );
   };
@@ -277,16 +387,13 @@ export const OrdersPage = () => {
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-softgray">Items</p>
                     <p className="mt-2 text-sm leading-6 text-charcoal">{order.itemLabel || 'No line items available'}</p>
                   </div>
-                  { /* Hide financials for non-admin staff */ }
-                  { isAdmin && (
                   <div className="rounded-[22px] bg-white/75 p-4">
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-softgray">Total</p>
                     <p className="mt-2 text-2xl font-semibold text-charcoal">{formatMoney(order.totalAmount)}</p>
                     <div className="mt-2 flex flex-wrap items-center gap-2">
-                      <Badge text={order.paymentStatus || 'unpaid'} variant={paymentMeta[order.paymentStatus] || 'default'} size="sm" />
+                      <Badge text={order.paymentStatus || 'pending'} variant={paymentMeta[order.paymentStatus] || 'default'} size="sm" />
                     </div>
                   </div>
-                  )}
                 </div>
 
                 <div className="mt-4 rounded-[22px] bg-white/75 p-4">
@@ -310,6 +417,96 @@ export const OrdersPage = () => {
           The board is designed for floor staff and kitchen leads to update order state with one click, minimizing back-and-forth during peak service.
         </div>
       </Card>
+
+      <Modal
+        isOpen={Boolean(billOrder)}
+        onClose={() => setBillOrder(null)}
+        title={billOrder ? `Bill - ${billOrder.orderNumber}` : 'Bill'}
+        size="xl"
+      >
+        {billOrder && (
+          <div className="space-y-6">
+            <div className="rounded-2xl border border-beige/70 bg-peach/35 p-4 text-charcoal">
+              <h3 className="text-lg font-semibold">{receiptConfig.name}</h3>
+              <p className="mt-1 text-sm text-softgray">{receiptConfig.tagline}</p>
+              <p className="mt-2 text-sm text-softgray">{receiptConfig.address} · {receiptConfig.phone}</p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="rounded-2xl bg-white/75 p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-softgray">Table</p>
+                <p className="mt-2 text-xl font-semibold text-charcoal">{billOrder.table?.tableNumber || '-'}</p>
+              </div>
+              <div className="rounded-2xl bg-white/75 p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-softgray">Order Status</p>
+                <p className="mt-2 text-xl font-semibold text-charcoal">{billOrder.orderStatus}</p>
+              </div>
+              <div className="rounded-2xl bg-white/75 p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-softgray">Payment</p>
+                <p className="mt-2 text-xl font-semibold text-charcoal">{billOrder.paymentStatus || 'pending'}</p>
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl bg-white/75 p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-softgray">Cashier</p>
+                <p className="mt-2 text-base font-semibold text-charcoal">{user?.name || user?.email || 'Staff'}</p>
+              </div>
+              <div className="rounded-2xl bg-white/75 p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-softgray">Payment Method</p>
+                <p className="mt-2 text-base font-semibold text-charcoal">{(billOrder.paymentMethod || 'cash').replace('_', ' ')}</p>
+              </div>
+            </div>
+
+            <div className="rounded-2xl bg-white/75 p-4">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-softgray">Bill Summary</p>
+              <div className="space-y-2">
+                {(billOrder.items || []).map((item, index) => (
+                  <div key={`${item.menuItem?._id || index}-${index}`} className="flex items-center justify-between gap-4 text-sm text-charcoal">
+                    <span>{item.menuItem?.name || item.menuItem?.itemName || 'Item'} x{item.quantity}</span>
+                    <span className="font-semibold">{formatMoney(item.subtotal)}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 border-t border-beige/60 pt-4 text-sm text-charcoal">
+                <div className="mb-2 flex items-center justify-between">
+                  <span>Subtotal</span>
+                  <span>{formatMoney(billOrder.subtotal)}</span>
+                </div>
+                <div className="mb-2 flex items-center justify-between">
+                  <span>Tax</span>
+                  <span>{formatMoney(billOrder.tax)}</span>
+                </div>
+                <div className="flex items-center justify-between text-base font-semibold">
+                  <span>Total</span>
+                  <span>{formatMoney(billOrder.totalAmount)}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" onClick={() => printBill(billOrder)}>
+                <Printer size={16} /> Print Bill
+              </Button>
+              {billOrder.paymentStatus !== 'paid' && (
+                <>
+                  <Button variant="primary" onClick={() => markOrderPaid(billOrder._id, 'cash')}>
+                    <CreditCard size={16} /> Mark Paid (Cash)
+                  </Button>
+                  <Button variant="outline" onClick={() => markOrderPaid(billOrder._id, 'card')}>
+                    Mark Paid (Card)
+                  </Button>
+                  <Button variant="outline" onClick={() => markOrderPaid(billOrder._id, 'mobile_money')}>
+                    Mark Paid (Mobile Money)
+                  </Button>
+                </>
+              )}
+            </div>
+
+            <p className="text-sm text-softgray">{receiptConfig.footerNote}</p>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };

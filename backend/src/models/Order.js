@@ -58,8 +58,8 @@ const orderSchema = new mongoose.Schema(
     },
     paymentStatus: {
       type: String,
-      enum: ['unpaid', 'paid', 'partial'],
-      default: 'unpaid',
+      enum: ['pending', 'paid'],
+      default: 'pending',
     },
     amountPaid: {
       type: Number,
@@ -67,8 +67,8 @@ const orderSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String,
-      enum: ['cash', 'card', 'upi', 'online'],
-      default: null,
+      enum: ['cash', 'card', 'mobile_money'],
+      default: 'cash',
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,

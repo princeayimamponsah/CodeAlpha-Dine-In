@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle2, Clock3, Lock, Mail, ShieldCheck, Sparkles, UtensilsCrossed } from 'lucide-react';
 import GoogleSignInButton from '../components/GoogleSignInButton';
+import { API_BASE_URL } from '../services/api';
 import restaurantLandingImage from '../../assets/restaurant landing page.jpg';
 
 export const LoginPage = () => {
@@ -53,8 +54,7 @@ export const LoginPage = () => {
   }, [addNotification, navigate, setAuth]);
 
   const handleGoogleLogin = () => {
-    const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-    window.location.href = `${apiBase}/auth/google`;
+    window.location.href = `${API_BASE_URL}/auth/google`;
   };
 
   const handleLogin = async (e) => {

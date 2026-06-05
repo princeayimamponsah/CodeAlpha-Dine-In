@@ -52,6 +52,7 @@ export const orderService = {
   updateOrderItemStatus: (id, itemIndex, status) => 
     api.patch(`/orders/${id}/item-status`, { itemIndex, status }),
   processPayment: (id, data) => api.patch(`/orders/${id}/payment`, data),
+  markOrderPaid: (id, method = 'cash') => api.patch(`/orders/${id}/payment`, { method }),
   addItemToOrder: (id, data) => api.patch(`/orders/${id}/add-item`, data),
   removeItemFromOrder: (id, itemIndex) => 
     api.patch(`/orders/${id}/remove-item`, { itemIndex }),
