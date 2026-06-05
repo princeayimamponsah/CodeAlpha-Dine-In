@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Badge, Button, Card, Input, Select, SectionHeader, Textarea } from '../components/UI';
+import { Badge, Button, Card, Input, Modal, Select, SectionHeader, Textarea } from '../components/UI';
+import { useNotificationStore } from '../context/store';
+import {
+  getDefaultReceiptConfig,
+  getReceiptConfig,
+  resetReceiptConfig,
+  saveReceiptConfig,
+} from '../services/receiptConfig';
 import { Bell, Lock, ShieldCheck, Store, User } from 'lucide-react';
 
 const ToggleRow = ({ label, description, enabled, setEnabled }) => (
@@ -24,6 +31,26 @@ export const SettingsPage = () => {
   const [smsAlerts, setSmsAlerts] = useState(false);
   const [nightMode, setNightMode] = useState(false);
   const [twoFactor, setTwoFactor] = useState(true);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const addNotification = useNotificationStore((state) => state.addNotification);
+  const [receiptConfig, setReceiptConfig] = useState(getReceiptConfig());
+
+  const handleSaveReceiptConfig = () => {
+    saveReceiptConfig(receiptConfig);
+    addNotification({
+      type: 'success',
+      message: 'Receipt branding saved',
+    });
+  };
+
+  const handleResetReceiptConfig = () => {
+    resetReceiptConfig();
+    setReceiptConfig(getDefaultReceiptConfig());
+    addNotification({
+      type: 'success',
+      message: 'Receipt branding reset to defaults',
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -145,8 +172,143 @@ export const SettingsPage = () => {
               </div>
             </div>
           </Card>
+
+          <Card className="space-y-5">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-wine/10 text-wine">
+                <Store size={20} />
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-softgray">Billing</p>
+                <h3 className="text-2xl font-semibold text-charcoal">Receipt branding</h3>
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <Input
+                label="Restaurant name"
+                value={receiptConfig.name}
+                onChange={(event) =>
+                  setReceiptConfig((current) => ({ ...current, name: event.target.value }))
+                }
+              />
+              <Input
+                label="Tagline"
+                value={receiptConfig.tagline}
+                onChange={(event) =>
+                  setReceiptConfig((current) => ({ ...current, tagline: event.target.value }))
+                }
+              />
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              <Input
+                label="Address"
+                value={receiptConfig.address}
+                onChange={(event) =>
+                  setReceiptConfig((current) => ({ ...current, address: event.target.value }))
+                }
+              />
+              <Input
+                label="Phone"
+                value={receiptConfig.phone}
+                onChange={(event) =>
+                  setReceiptConfig((current) => ({ ...current, phone: event.target.value }))
+                }
+              />
+            </div>
+            <Textarea
+              label="Receipt footer note"
+              rows={3}
+              value={receiptConfig.footerNote}
+              onChange={(event) =>
+                setReceiptConfig((current) => ({ ...current, footerNote: event.target.value }))
+              }
+            />
+
+            <div className="flex flex-wrap gap-2">
+              <Button variant="primary" onClick={handleSaveReceiptConfig}>
+                Save receipt branding
+              </Button>
+              <Button variant="secondary" onClick={() => setPreviewOpen(true)}>
+                Preview Receipt
+              </Button>
+              <Button variant="outline" onClick={handleResetReceiptConfig}>
+                Reset to defaults
+              </Button>
+            </div>
+          </Card>
         </div>
       </div>
+
+      <Modal
+        isOpen={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+        title="Receipt Preview"
+        size="lg"
+      >
+        <div className="space-y-5">
+          <div className="rounded-2xl border border-beige/70 bg-peach/35 p-4 text-center">
+            <h3 className="text-lg font-semibold text-charcoal">{receiptConfig.name || 'DINE-IN RESTAURANT'}</h3>
+            <p className="mt-1 text-sm text-softgray">{receiptConfig.tagline || 'Premium Hospitality Operations'}</p>
+            <p className="mt-2 text-sm text-softgray">{receiptConfig.address || 'Accra, Ghana'} · {receiptConfig.phone || '+233 000 000 000'}</p>
+          </div>
+
+          <div className="rounded-2xl bg-white/75 p-4 text-sm text-charcoal">
+            <div className="flex items-center justify-between">
+              <span>Order</span>
+              <span className="font-semibold">ORD-2026-00021</span>
+            </div>
+            <div className="mt-1 flex items-center justify-between">
+              <span>Table</span>
+              <span className="font-semibold">5</span>
+            </div>
+            <div className="mt-1 flex items-center justify-between">
+              <span>Cashier</span>
+              <span className="font-semibold">Admin User</span>
+            </div>
+            <div className="mt-1 flex items-center justify-between">
+              <span>Payment Method</span>
+              <span className="font-semibold">Cash</span>
+            </div>
+          </div>
+
+          <div className="rounded-2xl bg-white/75 p-4 text-sm text-charcoal">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-softgray">Bill Summary</p>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span>Jollof Rice x1</span>
+                <span className="font-semibold">GHS 35.00</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Coke x1</span>
+                <span className="font-semibold">GHS 10.00</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Chicken x1</span>
+                <span className="font-semibold">GHS 25.00</span>
+              </div>
+            </div>
+            <div className="mt-4 border-t border-beige/60 pt-4">
+              <div className="mb-2 flex items-center justify-between">
+                <span>Subtotal</span>
+                <span>GHS 70.00</span>
+              </div>
+              <div className="mb-2 flex items-center justify-between">
+                <span>Tax</span>
+                <span>GHS 7.00</span>
+              </div>
+              <div className="flex items-center justify-between text-base font-semibold">
+                <span>Total</span>
+                <span>GHS 77.00</span>
+              </div>
+            </div>
+          </div>
+
+          <p className="text-center text-sm text-softgray">
+            {receiptConfig.footerNote || 'Thank you for dining with us. Please come again.'}
+          </p>
+        </div>
+      </Modal>
     </div>
   );
 };

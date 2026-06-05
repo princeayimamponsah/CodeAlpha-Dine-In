@@ -161,29 +161,36 @@ class OrderService {
   }
 
   async processPayment(orderId, paymentData) {
-    const { amount, method } = paymentData;
+    const method = paymentData?.method || 'cash';
 
     const order = await Order.findById(orderId);
     if (!order) {
       throw new ApiError(404, 'Order not found');
     }
 
-    order.amountPaid += amount;
-    order.paymentMethod = method;
-
-    if (order.amountPaid >= order.totalAmount) {
-      order.paymentStatus = 'paid';
-      order.orderStatus = 'completed';
-      order.completedAt = new Date();
-
-      // Free the table
-      await Table.findByIdAndUpdate(order.table, {
-        status: 'available',
-        currentOrder: null,
-      });
-    } else if (order.amountPaid > 0) {
-      order.paymentStatus = 'partial';
+    if (!['cash', 'card', 'mobile_money'].includes(method)) {
+      throw new ApiError(400, 'Invalid payment method');
     }
+
+    if (order.orderStatus === 'cancelled') {
+      throw new ApiError(400, 'Cannot process payment for a cancelled order');
+    }
+
+    if (order.paymentStatus === 'paid') {
+      throw new ApiError(400, 'Order is already paid');
+    }
+
+    order.amountPaid = order.totalAmount;
+    order.paymentMethod = method;
+    order.paymentStatus = 'paid';
+    order.orderStatus = 'completed';
+    order.completedAt = new Date();
+
+    // Free the table once the bill is settled
+    await Table.findByIdAndUpdate(order.table, {
+      status: 'available',
+      currentOrder: null,
+    });
 
     await order.save();
     await order.populate('table items.menuItem createdBy');

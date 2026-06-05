@@ -7,6 +7,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, CheckCircle2, Clock3, Lock, Mail, ShieldCheck, Sparkles, UtensilsCrossed } from 'lucide-react';
 import GoogleSignInButton from '../components/GoogleSignInButton';
+import { API_BASE_URL } from '../services/api';
+import restaurantLandingImage from '../../assets/restaurant landing page.jpg';
 
 export const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -52,8 +54,7 @@ export const LoginPage = () => {
   }, [addNotification, navigate, setAuth]);
 
   const handleGoogleLogin = () => {
-    const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-    window.location.href = `${apiBase}/auth/google`;
+    window.location.href = `${API_BASE_URL}/auth/google`;
   };
 
   const handleLogin = async (e) => {
@@ -85,8 +86,14 @@ export const LoginPage = () => {
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
-          className="relative overflow-hidden rounded-[36px] border border-gold/25 bg-wine p-8 text-cream shadow-[0_30px_90px_rgba(109,31,61,0.28)] lg:p-10"
+          className="relative overflow-hidden rounded-[36px] border border-gold/25 bg-charcoal p-8 text-cream shadow-[0_30px_90px_rgba(109,31,61,0.28)] lg:p-10"
+          style={{
+            backgroundImage: `linear-gradient(135deg, rgba(39, 23, 15, 0.78), rgba(109, 31, 61, 0.55)), url(${restaurantLandingImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
         >
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/20" />
           <div className="relative z-10 flex h-full flex-col justify-between">
             <div>
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-cream/90 backdrop-blur-md">

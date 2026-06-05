@@ -37,6 +37,7 @@ import {
   Users,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import restaurantDashboardImage from '../../assets/restaurant dashboard.jpg';
 
 const today = new Date();
 
@@ -359,7 +360,15 @@ export const DashboardPage = () => {
 
   return (
     <div className="space-y-6">
-      <div className="relative overflow-hidden rounded-[36px] border border-gold/25 bg-wine p-6 text-cream shadow-[0_28px_80px_rgba(107,30,30,0.22)] lg:p-8">
+      <div
+        className="relative overflow-hidden rounded-[36px] border border-gold/25 bg-charcoal p-6 text-cream shadow-[0_28px_80px_rgba(107,30,30,0.22)] lg:p-8"
+        style={{
+          backgroundImage: `linear-gradient(135deg, rgba(39, 23, 15, 0.82), rgba(107, 30, 30, 0.56)), url(${restaurantDashboardImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/20" />
         <div className="relative z-10 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
           <div className="max-w-3xl space-y-4">
             <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-cream/90 backdrop-blur-md">

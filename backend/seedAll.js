@@ -10,7 +10,7 @@ const User = require('./src/models/User');
 const seedDatabase = async () => {
   try {
     // Connect to MongoDB
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/dine-in');
+    await mongoose.connect(process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/dine-in');
     console.log('✓ Connected to MongoDB');
 
     // Clear existing data
@@ -28,7 +28,7 @@ const seedDatabase = async () => {
         category: 'appetizers',
         description: 'Crispy bread with tomato, garlic, and basil',
         price: 12.99,
-          image: '/images/meals/Bruschetta.jpg',
+        image: '/images/meals/Spring-Rolls-6.webp',
         stockQuantity: 50,
         thresholdLevel: 10,
         isAvailable: true,
@@ -41,7 +41,7 @@ const seedDatabase = async () => {
         category: 'appetizers',
         description: 'Fried squid with lemon aioli',
         price: 14.99,
-          image: '/images/meals/clamari fritti.jpg',
+        image: '/images/meals/clamari fritti.jpg',
         stockQuantity: 30,
         thresholdLevel: 8,
         isAvailable: true,
@@ -54,7 +54,7 @@ const seedDatabase = async () => {
         category: 'appetizers',
         description: 'Crispy vegetable spring rolls with sweet chili dip',
         price: 9.99,
-          image: '/images/meals/Spring-Rolls-6.webp',
+        image: '/images/meals/Spring-Rolls-6.webp',
         stockQuantity: 40,
         thresholdLevel: 10,
         isAvailable: true,
@@ -68,7 +68,7 @@ const seedDatabase = async () => {
         category: 'mains',
         description: 'Atlantic salmon with lemon butter sauce and seasonal vegetables',
         price: 24.99,
-          image: '/images/meals/Grilled-Salmon-.jpg',
+        image: '/images/meals/Grilled-Salmon-.jpg',
         stockQuantity: 25,
         thresholdLevel: 5,
         isAvailable: true,
@@ -81,7 +81,7 @@ const seedDatabase = async () => {
         category: 'mains',
         description: 'Premium cut with garlic butter, served with fries',
         price: 28.99,
-          image: '/images/meals/ribeye roast.webp',
+        image: '/images/meals/ribeye roast.webp',
         stockQuantity: 20,
         thresholdLevel: 5,
         isAvailable: true,
@@ -94,7 +94,7 @@ const seedDatabase = async () => {
         category: 'mains',
         description: 'Classic Italian pasta with bacon, egg, and cheese',
         price: 16.99,
-          image: '/images/meals/carbonara pasta.webp',
+        image: '/images/meals/carbonara pasta.webp',
         stockQuantity: 35,
         thresholdLevel: 10,
         isAvailable: true,
@@ -107,7 +107,7 @@ const seedDatabase = async () => {
         category: 'mains',
         description: 'Creamy risotto with seasonal vegetables',
         price: 15.99,
-          image: '/images/meals/vegetable Risotto.jpg',
+        image: '/images/meals/vegetable Risotto.jpg',
         stockQuantity: 30,
         thresholdLevel: 8,
         isAvailable: true,
@@ -121,7 +121,7 @@ const seedDatabase = async () => {
         category: 'desserts',
         description: 'Classic Italian dessert with mascarpone and coffee',
         price: 7.99,
-          image: '/images/meals/Tiramisu.jpg',
+        image: '/images/meals/Tiramisu.jpg',
         stockQuantity: 20,
         thresholdLevel: 5,
         isAvailable: true,
@@ -134,7 +134,7 @@ const seedDatabase = async () => {
         category: 'desserts',
         description: 'Warm chocolate cake with molten center',
         price: 8.99,
-          image: '/images/meals/Chocolate Lava Cake.jpg',
+        image: '/images/meals/Chocolate Lava Cake.jpg',
         stockQuantity: 15,
         thresholdLevel: 5,
         isAvailable: true,
@@ -148,7 +148,7 @@ const seedDatabase = async () => {
         category: 'beverages',
         description: 'Premium red wine blend',
         price: 9.99,
-          image: '/images/meals/House Red Wine.jpg',
+        image: '/images/meals/House Red Wine.jpg',
         stockQuantity: 100,
         thresholdLevel: 20,
         isAvailable: true,
@@ -161,7 +161,7 @@ const seedDatabase = async () => {
         category: 'beverages',
         description: 'Refreshing house-made iced tea',
         price: 3.99,
-          image: '/images/meals/Iced Tea.jpg',
+        image: '/images/meals/Iced Tea.jpg',
         stockQuantity: 100,
         thresholdLevel: 20,
         isAvailable: true,
@@ -261,7 +261,7 @@ const seedDatabase = async () => {
         table: tables[1]._id,
         reservationTime: new Date(now.getTime() + 3 * 60 * 60 * 1000), // 3 hours from now
         guests: 4,
-        status: 'confirmed',
+        status: 'active',
         specialRequests: 'Anniversary celebration',
       },
       {
@@ -303,7 +303,12 @@ const seedDatabase = async () => {
         subtotal: 75.96,
         tax: 11.39,
         totalAmount: 87.35,
-        status: 'completed',
+        orderStatus: 'completed',
+        paymentStatus: 'paid',
+        paymentMethod: 'cash',
+        amountPaid: 87.35,
+        startedAt: new Date(now.getTime() - 70 * 60 * 1000),
+        completedAt: new Date(now.getTime() - 10 * 60 * 1000),
       },
       {
         orderNumber: `ORD-${Date.now()}-002`,
@@ -337,10 +342,26 @@ const seedDatabase = async () => {
         subtotal: 85.95,
         tax: 12.89,
         totalAmount: 98.84,
-        status: 'in-progress',
+        orderStatus: 'served',
+        paymentStatus: 'pending',
+        paymentMethod: 'cash',
+        amountPaid: 0,
+        startedAt: new Date(now.getTime() - 30 * 60 * 1000),
       },
     ]);
     console.log(`✓ Added ${orders.length} orders`);
+
+    await Table.findByIdAndUpdate(tables[0]._id, {
+      status: 'available',
+      currentOrder: null,
+      currentReservation: reservations[0]._id,
+    });
+
+    await Table.findByIdAndUpdate(tables[1]._id, {
+      status: 'occupied',
+      currentOrder: orders[1]._id,
+      currentReservation: reservations[1]._id,
+    });
 
     console.log('\n✅ All seed data inserted successfully!');
     console.log('Database is now populated with:');
