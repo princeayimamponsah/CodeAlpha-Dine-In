@@ -2,10 +2,13 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI;
+    const mongoUri =
+      process.env.MONGO_URI ||
+      process.env.MONGODB_URI ||
+      process.env.DATABASE_URL;
 
     if (!mongoUri) {
-      throw new Error('MONGO_URI is not defined');
+      throw new Error('Missing database connection string. Set MONGO_URI, MONGODB_URI, or DATABASE_URL.');
     }
 
     const conn = await mongoose.connect(mongoUri);
