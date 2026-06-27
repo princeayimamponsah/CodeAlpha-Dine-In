@@ -120,7 +120,7 @@ DINE-IN/
 1. **Backend Configuration**
    - Create `.env` file in `backend/` directory:
    ```env
-   MONGODB_URI=mongodb://localhost:27017/dine-in
+   MONGO_URI=mongodb://localhost:27017/dine-in
    JWT_SECRET=your_jwt_secret_key_here
    PORT=5001
    NODE_ENV=development
@@ -469,7 +469,7 @@ For issues, questions, or suggestions, please open an issue on GitHub.
 ```
 PORT=5000
 NODE_ENV=development
-MONGODB_URI=mongodb://localhost:27017/dine-in
+MONGO_URI=mongodb://localhost:27017/dine-in
 JWT_SECRET=your-secret-key-here
 JWT_EXPIRE=7d
 BCRYPT_ROUNDS=10
@@ -478,7 +478,7 @@ CORS_ORIGIN=http://localhost:3000
 
 ### Frontend (.env)
 ```
-REACT_APP_API_URL=http://localhost:5000/api
+VITE_API_URL=http://localhost:5000/api
 ```
 
 ## 📦 Docker Setup (Optional)
@@ -507,10 +507,19 @@ Use Postman or similar tools with the provided API endpoints.
 
 ## 🚢 Deployment
 
-### Backend (Heroku/Railway/Render)
-```bash
-# Configure environment variables on platform
-git push heroku main
+### Backend (Render)
+1. Create a new Web Service from the repository.
+2. Set the root directory to `backend`.
+3. Use `npm install` as the build command.
+4. Use `npm start` as the start command.
+5. Add these environment variables:
+```env
+MONGO_URI=your_mongodb_atlas_connection_string
+JWT_SECRET=your_jwt_secret_key_here
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+NODE_ENV=production
+FRONTEND_URL=https://your-vercel-app.vercel.app
 ```
 
 ### Frontend (Vercel/Netlify)
@@ -523,10 +532,12 @@ npm run build
 
 ### MongoDB Connection Error
 - Ensure MongoDB is running
-- Check MONGODB_URI in .env
+- Check MONGO_URI in .env or the platform environment variables
+- If you already use MONGODB_URI, it is also accepted
 
 ### CORS Issues
 - Update CORS_ORIGIN in backend .env
+- Ensure FRONTEND_URL matches the deployed frontend on Render
 
 ### Port Already in Use
 - Change PORT in .env or kill process on port
